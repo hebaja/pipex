@@ -1,29 +1,38 @@
 CC=cc
 CC_FLAGS= -Wall -Wextra -Werror
-NAME=pipex.a
+NAME=libpipex.a
 INC_DIR=include
 SRC_DIR=src
-LIBFT_DIR=libft
 SRC_FILES=pipex.c
+LIB_DIR=lib
+LIBFT=$(LIB_DIR)/libft/libft.a
+LIBFT_PRINTF=$(LIB_DIR)/ft_printf/libftprintf.a
 SRCS=$(addprefix $(SRC_DIR)/, $(SRC_FILES))
 OBJS=$(SRCS:.c=.o)
 
-all: $(NAME)
-	make -C $(LIBFT_DIR)
-	cc $(CC_FLAGS) src/pipex.c pipex.a $(LIBFT_DIR)/libft.a $(LIBFT_DIR)/src/ft_printf/libftprintf.a -o pipex -g
+all: $(NAME) $(LIBFT) $(LIBFT_PRINTF)
+	cc $(CC_FLAGS) -L. -lpipex -Llib/libft/ -lft -Llib/ft_printf/ -lftprintf -o pipex
 
-$(NAME): $(OBJS)
-	ar rcs $@ $^
+$(LIBFT):
+	make -C lib/libft/
+
+$(LIBFT_PRINTF):
+	make -C lib/ft_printf
+
+$(NAME): $(OBJS) $(LIBFT) $(LIBFT_PRINTF)
+	ar rcs $@ $(OBJS) $(LIBFT) $(LIBFT_PRINTF)
 
 .c.o:
 	$(CC) $(CC_FLAGS) -c $< -o $@
 
 clean:
-	make -C $(LIBFT_DIR) clean
+	make -C $(LIB_DIR)/libft clean
+	make -C $(LIB_DIR)/ft_printf clean
 	rm -f $(OBJS)
 
 fclean: clean
-	make -C $(LIBFT_DIR) fclean
+	make -C $(LIB_DIR)/libft fclean
+	make -C $(LIB_DIR)/ft_printf fclean
 	rm -f $(NAME)
 
 re: fclean all
