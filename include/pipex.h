@@ -3,10 +3,14 @@
 
 # include <unistd.h>
 # include <fcntl.h>
+# include <stdio.h>
 # include <stdlib.h>
+# include <string.h>
+# include <errno.h>
 # include "../lib/libft/include/libft.h"
 # include "../lib/ft_printf/include/ft_printf.h"
 
-size_t	file_len(const char *file_name);
+size_t	get_file_len(const char *file_name);
+void	get_file_content(const char *file_name, char *str);
 
 #endif

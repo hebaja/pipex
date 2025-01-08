@@ -3,17 +3,23 @@
 int	main(int argc, char **argv)
 {
 	char	*file_name;
+	char	*file_content;
+	size_t	file_len;
 
 	(void)argc;
 
 	file_name = argv[1];
-	ft_printf("%d %d", file_len(file_name), ft_strlen(file_name));
+	file_len = get_file_len(file_name);
+	file_content = (char *)malloc(sizeof(char) * (file_len));
+	get_file_content(file_name, file_content);
+	ft_printf("content -> %s\n", file_content);
 
-	// if (argc == 2)
-	// {
-	// 	int	i = ft_isalpha(argv[1][0]);
-	// 	ft_printf("here %d\n", i);
-	// 	execve(path, args, NULL);
-	// }
+	//ft_printf("%d", access(file_name, W_OK));
+
+	if (access(file_name, X_OK) < 0)
+		perror("Not executable");
+
+	ft_printf("%s", strerror(EBUSY));
+
 	return (0);
 }

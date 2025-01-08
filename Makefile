@@ -3,7 +3,7 @@ CC_FLAGS= -Wall -Wextra -Werror
 NAME=libpipex.a
 INC_DIR=include
 SRC_DIR=src
-SRC_FILES=pipex.c file_len.c
+SRC_FILES=pipex.c get_file_len.c get_file_content.c
 LIB_DIR=lib
 LIBFT=$(LIB_DIR)/libft/libft.a
 LIBFT_PRINTF=$(LIB_DIR)/ft_printf/libftprintf.a
@@ -11,7 +11,7 @@ SRCS=$(addprefix $(SRC_DIR)/, $(SRC_FILES))
 OBJS=$(SRCS:.c=.o)
 
 all: $(NAME) $(LIBFT) $(LIBFT_PRINTF)
-	cc $(CC_FLAGS) -L. -lpipex -Llib/libft/ -lft -Llib/ft_printf/ -lftprintf -o pipex
+	cc $(CC_FLAGS) -L. -lpipex -Llib/libft/ -lft -Llib/ft_printf/ -lftprintf -o pipex -g
 
 $(LIBFT):
 	make -C lib/libft/

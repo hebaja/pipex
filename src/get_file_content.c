@@ -1,23 +1,26 @@
 #include "../include/pipex.h"
 
-size_t	file_len(const char *file_name)
+void	get_file_content(const char *file_name, char *str)
 {
 	int     fd;
-	int	bytes;		
+	int	bytes;
 	char	*buf;
-	size_t	len;
+	int	i;
 
 	fd = open(file_name, O_RDONLY);
 	buf = (char *)malloc(sizeof(char) * 10);
 	bytes = -1;
+	i = 0;
 	bytes = read(fd, buf, 10);
-	len = bytes;
+	ft_memcpy(&str[i], buf, bytes);
+	i += bytes;
 	while (bytes)
 	{
 		bytes = read(fd, buf, 10);
-		len += bytes;
+		ft_memcpy(&str[i], buf, bytes);
+		i += bytes;
 	}
+	str[i] = '\0';
 	close(fd);
 	free(buf);
-	return (len);
 }
