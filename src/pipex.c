@@ -6,6 +6,9 @@ int	main(int argc, char **argv)
 	char	*file_content;
 	size_t	file_len;
 
+	int	fd[2];
+	int	pid;
+
 	(void)argc;
 
 	file_name = argv[1];
@@ -14,12 +17,20 @@ int	main(int argc, char **argv)
 	get_file_content(file_name, file_content);
 	ft_printf("content -> %s\n", file_content);
 
-	//ft_printf("%d", access(file_name, W_OK));
+	if (pipe(fd) < 0)
+	{
+		perror("pipe");
+		exit(0);
+	}
+	pid = fork();
+	if (pid == 0)
+	{
+		close(fd[0]);
 
-	if (access(file_name, X_OK) < 0)
-		perror("Not executable");
+	}
 
-	ft_printf("%s", strerror(EBUSY));
+	
+
 
 	return (0);
 }
