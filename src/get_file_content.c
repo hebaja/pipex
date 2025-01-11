@@ -12,11 +12,13 @@ void	get_file_content(const char *file_name, char *str)
 	bytes = -1;
 	i = 0;
 	bytes = read(fd, buf, 10);
-	ft_memcpy(&str[i], buf, bytes);
+	ft_memcpy(str, buf, bytes);
 	i += bytes;
 	while (bytes)
 	{
 		bytes = read(fd, buf, 10);
+		if (bytes == 0)
+			break;
 		ft_memcpy(&str[i], buf, bytes);
 		i += bytes;
 	}
