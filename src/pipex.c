@@ -72,7 +72,7 @@ char	*add_path(char *cmd)
 	return (NULL);
 }
 
-t_cmd	*cmd_new(char *cmd, char *file_content)
+t_cmd	*cmd_new(char *cmd)
 {
 	t_cmd	*lst_cmd;
 	int	i;
@@ -84,9 +84,6 @@ t_cmd	*cmd_new(char *cmd, char *file_content)
 		while (cmd[i] == ' ' || cmd[i] == '\t')
 			i++;
 		lst_cmd->cmd = ft_substr(cmd, 0, cmd_len(cmd));
-
-
-
 
 			lst_cmd->args = ft_split(cmd, ' ');
 		lst_cmd->next = NULL;
@@ -110,7 +107,7 @@ void	cmd_clear(t_cmd **lst_cmd)
 	*lst_cmd = NULL;
 }
 
-t_cmd	*compose_cmd(char *cmd, char *file_content)
+t_cmd	*compose_cmd(char *cmd)
 {
 	t_cmd	*lst_cmd;
 	char	*built_cmd;
@@ -118,7 +115,7 @@ t_cmd	*compose_cmd(char *cmd, char *file_content)
 	built_cmd = add_path(cmd);
 	if (built_cmd)
 	{
-		lst_cmd = cmd_new(built_cmd, file_content);
+		lst_cmd = cmd_new(built_cmd);
 		free(built_cmd);
 		return (lst_cmd);
 	}
@@ -149,7 +146,6 @@ int	main(int argc, char **argv)
 	int	fd[2];
 	int	pid;
 	char	*file_content;
-	char	*receive;
 	t_cmd	*lst_cmd1;
 	t_cmd	*lst_cmd2;
 	int	fd2;
@@ -163,11 +159,12 @@ int	main(int argc, char **argv)
 			file_content = (char *)malloc(sizeof(char) * (get_file_len(argv[1]) + 1));
 			get_file_content("infile", file_content);
 		 	// ft_printf("%s\n", content);
+
 		}
 		else
 			exit(EXIT_FAILURE);
-		lst_cmd1 = compose_cmd(argv[2], file_content);
-		lst_cmd2 = compose_cmd(argv[3], NULL);
+		lst_cmd1 = compose_cmd(argv[2]);
+		lst_cmd2 = compose_cmd(argv[3]);
 		ft_printf("%s\n", lst_cmd1->cmd);
 		print_args(lst_cmd1->args);
 		ft_printf("%s\n", lst_cmd2->cmd);
@@ -183,41 +180,25 @@ int	main(int argc, char **argv)
 			if (pid == 0)
 			{
 				close(fd[1]);
-
-				// execve(lst_cmd1->cmd[0], char *const *argv, char *const *envp)
-
-				// write(fd[1], file_content, get_file_len(argv[1]) + 1);
-
 				dup2(fd[0], STDIN_FILENO);
-
 				close(fd[0]);
-				free(file_content);
-				cmd_clear(&lst_cmd1);
-				cmd_clear(&lst_cmd2);
+				//free(file_content);
+				//cmd_clear(&lst_cmd1);
+				//cmd_clear(&lst_cmd2);
 				execve(lst_cmd1->cmd, lst_cmd1->args, NULL);
 				perror("exeve");
 				exit(EXIT_FAILURE);
 			}
 			else
 			{
-				receive = (char *)malloc(sizeof(char) * get_file_len(argv[1]) + 1);
 				close(fd[0]);
-				write(fd[1], receive, get_file_len(argv[1]) + 1);
+				write(fd[1], file_content, ft_strlen(file_content));
 				close(fd[1]);
-				
-				// execve(lst_cmd1->cmd, lst_cmd1->args, char *const *envp)
-
-				// dup2(fd2, STDOUT_FILENO);
-				// close(fd2)c
 				wait(NULL);
-				ft_printf("receive -> %s\n", receive);
-				// close(fd2);
 			}
 			cmd_clear(&lst_cmd1);
 			cmd_clear(&lst_cmd2);
-			ft_printf("receive -> %s", receive);
 			free(file_content);
-			free(receive);
 		}
 		else
 		{	
