@@ -22,6 +22,20 @@ size_t	cmd_len(char *cmd)
 	return (count);
 }
 
+int	is_empty(char *str)
+{
+	int	i;
+
+	i = 0;
+	while (str[i])
+	{
+		if (str[i] != ' ' && str[i] != '\t')
+			return (0);
+		i++;
+	}
+	return (1);
+}
+
 int	is_path(char *str)
 {
 	int	i;
@@ -89,19 +103,25 @@ char	*add_path(char *cmd)
 			abs_cmd = NULL;
 			return (built_cmd);
 		}
+		free(built_cmd);
+		free(abs_cmd);
 	}
-	received_cmd = ft_substr(cmd, 0, cmd_len(cmd));
-	if (errno == ENOENT)
-		ft_printf("command not found: %s\n", received_cmd);
-	else
-		ft_printf("%s: %s\n", strerror(errno), received_cmd);
-	//free(built_cmd);
-	//free(abs_cmd);
-	free(received_cmd);
 	built_cmd = NULL;
 	abs_cmd = NULL;
-	received_cmd = NULL;
-	return (NULL);
+	return (ft_strdup(cmd));
+}
+
+char	**build_empty_args(char *empty_str)
+{
+	char	**empty_args;
+	char	*empty_arg;
+
+	empty_args = (char **)malloc(sizeof(char *) * 2);
+	if (!empty_args)
+		return (NULL);
+	empty_args[0] = ft_strdup(empty_str);
+	empty_args[1] = NULL;
+ 	return (empty_args);
 }
 
 t_cmd	*cmd_new(char *cmd)
@@ -109,21 +129,30 @@ t_cmd	*cmd_new(char *cmd)
 	t_cmd	*lst_cmd;
 	int	i;
 	int	cmd_pos;
+	char	*built_cmd;
 	
-	lst_cmd = (t_cmd *)malloc(sizeof(t_cmd) * 1);
 	i = 0;
 	cmd_pos = 0;
-	if (cmd[i])
+	if (cmd[i] && !is_empty(cmd))
 	{
+		lst_cmd = (t_cmd *)malloc(sizeof(t_cmd) * 1);
 		while (cmd[i] == ' ' || cmd[i] == '\t')
 			i++;
 
-		cmd_pos = command_pos(cmd);
-
-		// Maybe, verify if there is path and implement add_path here, case it is needed.
-
-		lst_cmd->cmd = ft_substr(cmd, 0, cmd_len(cmd));
-		lst_cmd->args = ft_split(&cmd[cmd_pos], ' ');
+		built_cmd = add_path(&cmd[i]);
+	
+		if (!is_path(cmd))
+			cmd_pos = command_pos(built_cmd);
+		lst_cmd->cmd = ft_substr(built_cmd, 0, cmd_len(built_cmd));
+		lst_cmd->args = ft_split(&built_cmd[cmd_pos], ' ');
+		lst_cmd->next = NULL;
+		free(built_cmd);
+	}
+	else if (is_empty(cmd))
+	{		
+		lst_cmd = (t_cmd *)malloc(sizeof(t_cmd) * 1);
+		lst_cmd->cmd = ft_strdup(cmd);
+		lst_cmd->args = build_empty_args(cmd);
 		lst_cmd->next = NULL;
 	}
 	return (lst_cmd);
@@ -148,13 +177,9 @@ void	cmd_clear(t_cmd **lst_cmd)
 t_cmd	*compose_cmd(char *cmd)
 {
 	t_cmd	*lst_cmd;
-	char	*built_cmd;
-
-	built_cmd = add_path(cmd);
-	if (built_cmd)
+	if (*cmd)
 	{
-		lst_cmd = cmd_new(built_cmd);
-		free(built_cmd);
+		lst_cmd = cmd_new(cmd);
 		return (lst_cmd);
 	}
 	return (NULL);
@@ -179,6 +204,40 @@ void	print_args(char **args)
 	}
 }
 
+void	do_command(int fd[2], char *file_content, t_cmd *lst_cmd)
+{
+	int	pid;
+
+	pid = fork();
+	if (pid == 0)
+	{
+		close(fd[1]);
+		dup2(fd[0], STDIN_FILENO);
+		close(fd[0]);
+		execve(lst_cmd->cmd, lst_cmd->args, NULL);
+		if (errno == ENOENT)
+			ft_printf("command not found: %s\n", lst_cmd->cmd);
+		else
+			ft_printf("%s: %s\n", strerror(errno), lst_cmd->cmd);
+		exit(EXIT_FAILURE);
+	}
+	else
+	{
+		close(fd[0]);
+
+	//dup2 again maybe
+		//
+
+		write(fd[1], file_content, ft_strlen(file_content));
+		close(fd[1]);
+		wait(NULL);
+	}
+	// cmd_clear(&lst_cmd);
+	// cmd_clear(&lst_cmd2);
+	free(file_content);
+
+}
+
 int	main(int argc, char **argv)
 {
 	int	fd[2];
@@ -197,7 +256,6 @@ int	main(int argc, char **argv)
 			file_content = (char *)malloc(sizeof(char) * (get_file_len(argv[1]) + 1));
 			get_file_content("infile", file_content);
 		 	// ft_printf("%s\n", content);
-
 		}
 		else
 			exit(EXIT_FAILURE);
@@ -209,7 +267,6 @@ int	main(int argc, char **argv)
 		}
 		else
 		{
-			//cmd_clear(&lst_cmd1);
 			free(file_content);
 			exit(EXIT_FAILURE);
 		}
@@ -219,7 +276,22 @@ int	main(int argc, char **argv)
 			ft_printf("%s\n", lst_cmd2->cmd);
 			print_args(lst_cmd2->args);
 		}
-		if (lst_cmd1)
+		if (lst_cmd1 && !is_empty(lst_cmd1->cmd))
+		{
+			if (pipe(fd) < 0)
+			{
+				perror("pipe");
+				exit(EXIT_FAILURE);
+			}
+			do_command(fd, file_content, lst_cmd1);
+			cmd_clear(&lst_cmd1);
+			cmd_clear(&lst_cmd2);
+		}
+
+
+
+
+		else if(is_empty(lst_cmd1->cmd))
 		{
 			if (pipe(fd) < 0)
 			{
@@ -229,14 +301,15 @@ int	main(int argc, char **argv)
 			pid = fork();
 			if (pid == 0)
 			{
+				char	*args[] = {"cat", NULL};
 				close(fd[1]);
 				dup2(fd[0], STDIN_FILENO);
 				close(fd[0]);
-				//free(file_content);
-				//cmd_clear(&lst_cmd1);
-				//cmd_clear(&lst_cmd2);
-				execve(lst_cmd1->cmd, lst_cmd1->args, NULL);
-				perror("exeve");
+				execve("/usr/bin/cat", args, NULL);
+				if (errno == ENOENT)
+					ft_printf("command not found: %s\n", args[0]);
+				else
+					ft_printf("%s: %s\n", strerror(errno), args[0]);
 				exit(EXIT_FAILURE);
 			}
 			else
