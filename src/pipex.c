@@ -1,4 +1,5 @@
 #include "../include/pipex.h"
+#include <complex.h>
 #include <fcntl.h>
 #include <string.h>
 #include <unistd.h>
@@ -204,16 +205,26 @@ void	print_args(char **args)
 	}
 }
 
-void	do_command(int fd[2], char *file_content, t_cmd *lst_cmd)
+int	do_command(int fd[2][2], int input_fd, int output_fd, t_cmd *lst_cmd)
 {
 	int	pid;
 
+	pid = 0;
+
 	pid = fork();
+	if (pid < 0)
+	{
+		perror("fork");
+		exit(EXIT_FAILURE);
+	}
 	if (pid == 0)
 	{
-		close(fd[1]);
-		dup2(fd[0], STDIN_FILENO);
-		close(fd[0]);
+		dup2(input_fd, STDIN_FILENO);
+		dup2(output_fd, STDOUT_FILENO);
+		close(fd[0][1]);
+		close(fd[1][0]);
+		close(fd[0][0]);
+		close(fd[1][1]);
 		execve(lst_cmd->cmd, lst_cmd->args, NULL);
 		if (errno == ENOENT)
 			ft_printf("command not found: %s\n", lst_cmd->cmd);
@@ -221,41 +232,29 @@ void	do_command(int fd[2], char *file_content, t_cmd *lst_cmd)
 			ft_printf("%s: %s\n", strerror(errno), lst_cmd->cmd);
 		exit(EXIT_FAILURE);
 	}
-	else
-	{
-		close(fd[0]);
-
-	//dup2 again maybe
-		//
-
-		write(fd[1], file_content, ft_strlen(file_content));
-		close(fd[1]);
-		wait(NULL);
-	}
-	// cmd_clear(&lst_cmd);
-	// cmd_clear(&lst_cmd2);
-	free(file_content);
+	return (pid);
 
 }
 
 int	main(int argc, char **argv)
 {
-	int	fd[2];
-	int	pid;
+	int	fd[3][2];
 	char	*file_content;
 	t_cmd	*lst_cmd1;
 	t_cmd	*lst_cmd2;
 	int	fd2;
+	char	buffer[1024];
+	int	bytes;
+	int	i;
 
 	fd2 = open("outfile", O_WRONLY | O_CREAT, 0664);	
-
+	i = -1;
 	if (argc == 4)
 	{
 		if (file_exists(argv[1]))
 		{
 			file_content = (char *)malloc(sizeof(char) * (get_file_len(argv[1]) + 1));
 			get_file_content("infile", file_content);
-		 	// ft_printf("%s\n", content);
 		}
 		else
 			exit(EXIT_FAILURE);
@@ -278,19 +277,45 @@ int	main(int argc, char **argv)
 		}
 		if (lst_cmd1 && !is_empty(lst_cmd1->cmd))
 		{
-			if (pipe(fd) < 0)
+			while (++i < 3)
 			{
-				perror("pipe");
-				exit(EXIT_FAILURE);
+				if (pipe(fd[i]) < 0)
+				{
+					perror("pipe");
+					exit(EXIT_FAILURE);
+				}
 			}
-			do_command(fd, file_content, lst_cmd1);
+			int pid1 = do_command(fd, fd[0][0], fd[1][1], lst_cmd1);
+			int pid2 = do_command(fd, fd[1][0], fd[2][1], lst_cmd2);
+
+			bytes = -1;
+
+			close(fd[0][0]);
+			close(fd[1][0]);
+			close(fd[1][1]);
+			close(fd[2][1]);
+			write(fd[0][1], file_content, ft_strlen(file_content));
+			close(fd[0][1]);
+
+			bytes = read(fd[2][0], buffer, sizeof(buffer) -1);
+			close(fd[2][0]);
+			if (bytes > 0)
+			{
+				buffer[bytes] = '\0';
+				ft_printf("%s", buffer);
+			}
+
+			waitpid(pid1, NULL, 0);
+			waitpid(pid2, NULL, 0);
+
 			cmd_clear(&lst_cmd1);
 			cmd_clear(&lst_cmd2);
+			free(file_content);
 		}
 
 
 
-
+		/*
 		else if(is_empty(lst_cmd1->cmd))
 		{
 			if (pipe(fd) < 0)
@@ -323,6 +348,7 @@ int	main(int argc, char **argv)
 			cmd_clear(&lst_cmd2);
 			free(file_content);
 		}
+		*/
 		else
 		{	
 			perror("parse");
