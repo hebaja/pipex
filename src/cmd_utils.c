@@ -65,7 +65,6 @@ int	command_pos(char *str)
 char	**build_empty_args(char *empty_str)
 {
 	char	**empty_args;
-	char	*empty_arg;
 
 	empty_args = (char **)malloc(sizeof(char *) * 2);
 	if (!empty_args)

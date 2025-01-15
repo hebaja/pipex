@@ -45,7 +45,6 @@ int	do_command(int fd[2][2], int input_fd, int output_fd, t_cmd *lst_cmd)
 	int	pid;
 
 	pid = 0;
-
 	pid = fork();
 	if (pid < 0)
 	{
@@ -67,21 +66,36 @@ int	do_command(int fd[2][2], int input_fd, int output_fd, t_cmd *lst_cmd)
 	return (pid);
 }
 
+char	*init_files(char *filename_in, char *filename_out)
+{
+	if (file_exists(argv[1]))
+	{
+		file_content = (char *)malloc(sizeof(char) * (get_file_len(argv[1]) + 1));
+		get_file_content("infile", file_content);
+	}
+	else
+		exit(EXIT_FAILURE);
+
+}
+
 int	main(int argc, char **argv)
 {
 	int	fd[3][2];
 	char	*file_content;
 	t_cmd	*lst_cmd1;
 	t_cmd	*lst_cmd2;
-	int	fd2;
+	int	out_fd;
 	char	buffer[1024];
 	int	bytes;
 	int	i;
 
-	fd2 = open("outfile", O_WRONLY | O_CREAT | O_TRUNC, 0664);	
+	out_fd = open(argv[4], O_WRONLY | O_CREAT | O_TRUNC, 0664);	
 	i = -1;
 	if (argc == 5)
 	{
+		if (!init_files(&argv[1], argv[4], &file_content, ))
+
+
 		if (file_exists(argv[1]))
 		{
 			file_content = (char *)malloc(sizeof(char) * (get_file_len(argv[1]) + 1));
@@ -89,6 +103,9 @@ int	main(int argc, char **argv)
 		}
 		else
 			exit(EXIT_FAILURE);
+
+
+
 		lst_cmd1 = compose_cmd(argv[2]);
 		if (lst_cmd1)
 		{
@@ -116,34 +133,30 @@ int	main(int argc, char **argv)
 					exit(EXIT_FAILURE);
 				}
 			}
-
-			
-
 			int pid1 = do_command(fd, fd[0][0], fd[1][1], lst_cmd1);
 			int pid2 = do_command(fd, fd[1][0], fd[2][1], lst_cmd2);
-
 			bytes = -1;
-
 			close(fd[0][0]);
 			close(fd[1][0]);
 			close(fd[1][1]);
 			close(fd[2][1]);
+
 			write(fd[0][1], file_content, ft_strlen(file_content));
 			close(fd[0][1]);
 
 			bytes = read(fd[2][0], buffer, sizeof(buffer) -1);
 			close(fd[2][0]);
-			dup2(fd2, STDOUT_FILENO);
-			close(fd2);
+			dup2(out_fd, STDOUT_FILENO);
+			close(out_fd);
+
+
 			if (bytes > 0)
 			{
 				buffer[bytes] = '\0';
 				ft_printf("%s", buffer);
 			}
 			else
-			{
 				ft_printf("");
-			}
 
 			waitpid(pid1, NULL, 0);
 			waitpid(pid2, NULL, 0);

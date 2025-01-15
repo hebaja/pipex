@@ -1,54 +1,49 @@
 #include "../include/pipex.h"
 
-char    *add_path(char *cmd)
+int	valid_built_cmd(char *built_cmd)
 {
-	int	i;
-	char	*paths[] = {"/usr/bin/", "/usr/sbin/"};
-	char	*built_cmd;
 	char	*abs_cmd;
 
+	abs_cmd = ft_substr(built_cmd, 0, cmd_len(built_cmd));
+	if (access(abs_cmd, F_OK) == 0 && access(abs_cmd, X_OK) == 0)
+	{
+		free(abs_cmd);
+		abs_cmd = NULL;
+		return (1);
+	}
+	free(built_cmd);
+	free(abs_cmd);
+	abs_cmd = NULL;
+	return (0);
+}
+
+char    *add_path(char *cmd)
+{
+	size_t	i;
+	char	*paths[] = {"/usr/bin/", "/usr/sbin/"};
+	char	*built_cmd;
+
+	i = 0;
 	if (cmd[0] != '/' && access(cmd, F_OK) < 0)
 	{
 		i = 0;
 		while (i < sizeof(paths) / 8)
 		{
 			built_cmd = ft_strjoin(paths[i++], cmd);
-			abs_cmd = ft_substr(built_cmd, 0, cmd_len(built_cmd));
-			if (access(abs_cmd, F_OK) == 0 && access(abs_cmd, X_OK) == 0)
-			{
-				free(abs_cmd);
-				abs_cmd = NULL;
+			if (valid_built_cmd(built_cmd))
 				return (built_cmd);
-			}
-			free(built_cmd);
-			free(abs_cmd);
 		}
 	}
 	else
 	{
 		built_cmd = ft_strdup(cmd);
-		abs_cmd = ft_substr(built_cmd, 0, cmd_len(built_cmd));
-		if (access(abs_cmd, F_OK) == 0 && access(abs_cmd, X_OK) == 0)
-		{
-			free(abs_cmd);
-			abs_cmd = NULL;
-			return (built_cmd);
-		}
-		free(built_cmd);
-		free(abs_cmd);
+			built_cmd = ft_strjoin(paths[i++], cmd);
+			if (valid_built_cmd(built_cmd))
+				return (built_cmd);
 	}
 	built_cmd = NULL;
-	abs_cmd = NULL;
 	return (ft_strdup(cmd));
 }
-
-
-
-
-
-
-
-
 
 t_cmd	*fill_lst_cmd(char *built_cmd, char *cmd, int is_empty)
 {
@@ -101,13 +96,9 @@ t_cmd   *cmd_new(char *cmd)
 		}
 	}
 	else if (is_empty(cmd))
-		lst_cmd = fill_lst_cmd(built_cmd, cmd, 1);
+		lst_cmd = fill_lst_cmd("", cmd, 1);
 	return (lst_cmd);
 }
-
-
-
-
 
 t_cmd   *compose_cmd(char *cmd)
 {
