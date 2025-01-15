@@ -5,185 +5,6 @@
 #include <unistd.h>
 #include <sys/wait.h>
 
-size_t	cmd_len(char *cmd)
-{
-	size_t	count;
-
-	count = 0;
-	if (*cmd)
-	{
-		while(*cmd == ' ' || *cmd == '\t')
-			cmd++;
-		while(*cmd && (*cmd != ' ' && *cmd != '\t'))
-		{
-			count++;
-			cmd++;
-		}
-	}
-	return (count);
-}
-
-int	is_empty(char *str)
-{
-	int	i;
-
-	i = 0;
-	while (str[i])
-	{
-		if (str[i] != ' ' && str[i] != '\t')
-			return (0);
-		i++;
-	}
-	return (1);
-}
-
-int	is_path(char *str)
-{
-	int	i;
-
-	i = 0;
-	while (str[i])
-	{
-		if (str[i] == '/')
-			return (1);
-		i++;
-	}
-	return (0);
-}
-
-int	command_pos(char *str)
-{
-	int	i;
-	int	last;
-
-	i = 0;
-	last = 0;
-	while (str[i] && str[i] != ' ')
-	{
-		if (str[i] == '/')
-			last = i + 1;
-		i++;
-	}
-	return (last);
-}
-
-char	*add_path(char *cmd)
-{
-	int	i;
-	char	*paths[] = {"/usr/bin/", "/usr/sbin/"};
-	char	*built_cmd;
-	char	*abs_cmd;
-	char	*received_cmd;
-
-	if (cmd[0] != '/' && access(cmd, F_OK) < 0)
-	{
-		i = 0;
-		while (i < 2)
-		{
-			built_cmd = ft_strjoin(paths[i++], cmd);
-			abs_cmd = ft_substr(built_cmd, 0, cmd_len(built_cmd));
-			if (access(abs_cmd, F_OK) == 0
-			&& access(abs_cmd, X_OK) == 0)
-			{
-				free(abs_cmd);
-				abs_cmd = NULL;
-				return (built_cmd);
-			}
-			free(built_cmd);
-			free(abs_cmd);
-		}
-	}
-	else
-	{
-		built_cmd = ft_strdup(cmd);
-		abs_cmd = ft_substr(built_cmd, 0, cmd_len(built_cmd));
-		if (access(abs_cmd, F_OK) == 0
-		&& access(abs_cmd, X_OK) == 0)
-		{
-			free(abs_cmd);
-			abs_cmd = NULL;
-			return (built_cmd);
-		}
-		free(built_cmd);
-		free(abs_cmd);
-	}
-	built_cmd = NULL;
-	abs_cmd = NULL;
-	return (ft_strdup(cmd));
-}
-
-char	**build_empty_args(char *empty_str)
-{
-	char	**empty_args;
-	char	*empty_arg;
-
-	empty_args = (char **)malloc(sizeof(char *) * 2);
-	if (!empty_args)
-		return (NULL);
-	empty_args[0] = ft_strdup(empty_str);
-	empty_args[1] = NULL;
- 	return (empty_args);
-}
-
-t_cmd	*cmd_new(char *cmd)
-{
-	t_cmd	*lst_cmd;
-	int	i;
-	int	cmd_pos;
-	char	*built_cmd;
-	
-	i = 0;
-	cmd_pos = 0;
-	if (cmd[i] && !is_empty(cmd))
-	{
-		lst_cmd = (t_cmd *)malloc(sizeof(t_cmd) * 1);
-		while (cmd[i] == ' ' || cmd[i] == '\t')
-			i++;
-
-		built_cmd = add_path(&cmd[i]);
-		if (access(ft_substr(built_cmd, 0, cmd_len(built_cmd)), F_OK) == 0
-		&& access(ft_substr(built_cmd, 0, cmd_len(built_cmd)), X_OK) == 0)
-		{
-			if (!is_path(cmd))
-				cmd_pos = command_pos(built_cmd);
-			lst_cmd->cmd = ft_substr(built_cmd, 0, cmd_len(built_cmd));
-			lst_cmd->args = ft_split(&built_cmd[cmd_pos], ' ');
-			lst_cmd->next = NULL;
-			free(built_cmd);
-		}
-		else
-		{
-			/*
-			lst_cmd->cmd = ft_strdup("");
-			lst_cmd->args = build_empty_args("");
-			lst_cmd->next = NULL;
-			*/
-			if (!is_path(cmd))
-				cmd_pos = command_pos(built_cmd);
-			lst_cmd->cmd = ft_substr(built_cmd, 0, cmd_len(built_cmd));
-			lst_cmd->args = ft_split(&built_cmd[cmd_pos], ' ');
-			lst_cmd->next = NULL;
-			
-			free(built_cmd);
-
-			if (errno == ENOENT)
-				ft_printf("command not found: %s\n", lst_cmd->cmd);
-			else
-				ft_printf("%s: %s\n", strerror(errno), lst_cmd->cmd);
-
-			perror("cmd_new");
-		}
-	}
-	else if (is_empty(cmd))
-	{		
-		lst_cmd = (t_cmd *)malloc(sizeof(t_cmd) * 1);
-		lst_cmd->cmd = ft_strdup(cmd);
-		lst_cmd->args = build_empty_args(cmd);
-		lst_cmd->next = NULL;
-	}
-	return (lst_cmd);
-}
-
 void	cmd_clear(t_cmd **lst_cmd)
 {
 	int	i;
@@ -198,17 +19,6 @@ void	cmd_clear(t_cmd **lst_cmd)
 	free((*lst_cmd)->args);
 	free(*lst_cmd);
 	*lst_cmd = NULL;
-}
-
-t_cmd	*compose_cmd(char *cmd)
-{
-	t_cmd	*lst_cmd;
-	if (*cmd)
-	{
-		lst_cmd = cmd_new(cmd);
-		return (lst_cmd);
-	}
-	return (NULL);
 }
 
 int	file_exists(char *file_name)
@@ -268,7 +78,7 @@ int	main(int argc, char **argv)
 	int	bytes;
 	int	i;
 
-	fd2 = open("outfile", O_WRONLY | O_CREAT, 0664);	
+	fd2 = open("outfile", O_WRONLY | O_CREAT | O_TRUNC, 0664);	
 	i = -1;
 	if (argc == 5)
 	{
@@ -332,7 +142,7 @@ int	main(int argc, char **argv)
 			}
 			else
 			{
-				ft_printf("\0");
+				ft_printf("");
 			}
 
 			waitpid(pid1, NULL, 0);
