@@ -83,7 +83,7 @@ char	*add_path(char *cmd)
 			built_cmd = ft_strjoin(paths[i++], cmd);
 			abs_cmd = ft_substr(built_cmd, 0, cmd_len(built_cmd));
 			if (access(abs_cmd, F_OK) == 0
-			|| access(abs_cmd, X_OK) == 0)
+			&& access(abs_cmd, X_OK) == 0)
 			{
 				free(abs_cmd);
 				abs_cmd = NULL;
@@ -98,7 +98,7 @@ char	*add_path(char *cmd)
 		built_cmd = ft_strdup(cmd);
 		abs_cmd = ft_substr(built_cmd, 0, cmd_len(built_cmd));
 		if (access(abs_cmd, F_OK) == 0
-		|| access(abs_cmd, X_OK) == 0)
+		&& access(abs_cmd, X_OK) == 0)
 		{
 			free(abs_cmd);
 			abs_cmd = NULL;
@@ -141,13 +141,38 @@ t_cmd	*cmd_new(char *cmd)
 			i++;
 
 		built_cmd = add_path(&cmd[i]);
-	
-		if (!is_path(cmd))
-			cmd_pos = command_pos(built_cmd);
-		lst_cmd->cmd = ft_substr(built_cmd, 0, cmd_len(built_cmd));
-		lst_cmd->args = ft_split(&built_cmd[cmd_pos], ' ');
-		lst_cmd->next = NULL;
-		free(built_cmd);
+		if (access(ft_substr(built_cmd, 0, cmd_len(built_cmd)), F_OK) == 0
+		&& access(ft_substr(built_cmd, 0, cmd_len(built_cmd)), X_OK) == 0)
+		{
+			if (!is_path(cmd))
+				cmd_pos = command_pos(built_cmd);
+			lst_cmd->cmd = ft_substr(built_cmd, 0, cmd_len(built_cmd));
+			lst_cmd->args = ft_split(&built_cmd[cmd_pos], ' ');
+			lst_cmd->next = NULL;
+			free(built_cmd);
+		}
+		else
+		{
+			/*
+			lst_cmd->cmd = ft_strdup("");
+			lst_cmd->args = build_empty_args("");
+			lst_cmd->next = NULL;
+			*/
+			if (!is_path(cmd))
+				cmd_pos = command_pos(built_cmd);
+			lst_cmd->cmd = ft_substr(built_cmd, 0, cmd_len(built_cmd));
+			lst_cmd->args = ft_split(&built_cmd[cmd_pos], ' ');
+			lst_cmd->next = NULL;
+			
+			free(built_cmd);
+
+			if (errno == ENOENT)
+				ft_printf("command not found: %s\n", lst_cmd->cmd);
+			else
+				ft_printf("%s: %s\n", strerror(errno), lst_cmd->cmd);
+
+			perror("cmd_new");
+		}
 	}
 	else if (is_empty(cmd))
 	{		
@@ -226,14 +251,10 @@ int	do_command(int fd[2][2], int input_fd, int output_fd, t_cmd *lst_cmd)
 		close(fd[0][0]);
 		close(fd[1][1]);
 		execve(lst_cmd->cmd, lst_cmd->args, NULL);
-		if (errno == ENOENT)
-			ft_printf("command not found: %s\n", lst_cmd->cmd);
-		else
-			ft_printf("%s: %s\n", strerror(errno), lst_cmd->cmd);
+		ft_printf("");
 		exit(EXIT_FAILURE);
 	}
 	return (pid);
-
 }
 
 int	main(int argc, char **argv)
@@ -249,7 +270,7 @@ int	main(int argc, char **argv)
 
 	fd2 = open("outfile", O_WRONLY | O_CREAT, 0664);	
 	i = -1;
-	if (argc == 4)
+	if (argc == 5)
 	{
 		if (file_exists(argv[1]))
 		{
@@ -285,6 +306,9 @@ int	main(int argc, char **argv)
 					exit(EXIT_FAILURE);
 				}
 			}
+
+			
+
 			int pid1 = do_command(fd, fd[0][0], fd[1][1], lst_cmd1);
 			int pid2 = do_command(fd, fd[1][0], fd[2][1], lst_cmd2);
 
@@ -299,10 +323,16 @@ int	main(int argc, char **argv)
 
 			bytes = read(fd[2][0], buffer, sizeof(buffer) -1);
 			close(fd[2][0]);
+			dup2(fd2, STDOUT_FILENO);
+			close(fd2);
 			if (bytes > 0)
 			{
 				buffer[bytes] = '\0';
 				ft_printf("%s", buffer);
+			}
+			else
+			{
+				ft_printf("\0");
 			}
 
 			waitpid(pid1, NULL, 0);
@@ -312,43 +342,6 @@ int	main(int argc, char **argv)
 			cmd_clear(&lst_cmd2);
 			free(file_content);
 		}
-
-
-
-		/*
-		else if(is_empty(lst_cmd1->cmd))
-		{
-			if (pipe(fd) < 0)
-			{
-				perror("pipe");
-				exit(EXIT_FAILURE);
-			}
-			pid = fork();
-			if (pid == 0)
-			{
-				char	*args[] = {"cat", NULL};
-				close(fd[1]);
-				dup2(fd[0], STDIN_FILENO);
-				close(fd[0]);
-				execve("/usr/bin/cat", args, NULL);
-				if (errno == ENOENT)
-					ft_printf("command not found: %s\n", args[0]);
-				else
-					ft_printf("%s: %s\n", strerror(errno), args[0]);
-				exit(EXIT_FAILURE);
-			}
-			else
-			{
-				close(fd[0]);
-				write(fd[1], file_content, ft_strlen(file_content));
-				close(fd[1]);
-				wait(NULL);
-			}
-			cmd_clear(&lst_cmd1);
-			cmd_clear(&lst_cmd2);
-			free(file_content);
-		}
-		*/
 		else
 		{	
 			perror("parse");
