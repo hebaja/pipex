@@ -13,6 +13,7 @@ int	valid_built_cmd(char *built_cmd)
 	}
 	free(built_cmd);
 	free(abs_cmd);
+	built_cmd = NULL;
 	abs_cmd = NULL;
 	return (0);
 }
@@ -24,7 +25,9 @@ char    *add_path(char *cmd)
 	char	*built_cmd;
 
 	i = 0;
-	if (cmd[0] != '/' && access(cmd, F_OK) < 0)
+	while (*cmd == ' ' || *cmd == '\t')
+		cmd++;
+	if (*cmd != '/' && access(cmd, F_OK) < 0)
 	{
 		i = 0;
 		while (i < sizeof(paths) / 8)
@@ -41,7 +44,6 @@ char    *add_path(char *cmd)
 			if (valid_built_cmd(built_cmd))
 				return (built_cmd);
 	}
-	built_cmd = NULL;
 	return (ft_strdup(cmd));
 }
 
@@ -73,18 +75,15 @@ t_cmd	*fill_lst_cmd(char *built_cmd, char *cmd, int is_empty)
 
 t_cmd   *cmd_new(char *cmd)
 {
-	int     i;
 	char    *built_cmd;
+	char	*abs_cmd;
 	t_cmd	*lst_cmd;
 
-	i = 0;
-	if (cmd[i] && !is_empty(cmd))
+	if (*cmd && !is_empty(cmd))
 	{
-		while (cmd[i] == ' ' || cmd[i] == '\t')
-			i++;
-		built_cmd = add_path(&cmd[i]);
-		if (access(ft_substr(built_cmd, 0, cmd_len(built_cmd)), F_OK) == 0
-		&& access(ft_substr(built_cmd, 0, cmd_len(built_cmd)), X_OK) == 0)
+		built_cmd = add_path(cmd);
+		abs_cmd = ft_substr(built_cmd, 0, cmd_len(built_cmd));
+		if (access(abs_cmd, F_OK) == 0 && access(abs_cmd, X_OK) == 0)
 			lst_cmd = fill_lst_cmd(built_cmd, cmd, 0);
 		else
 		{
@@ -94,6 +93,7 @@ t_cmd   *cmd_new(char *cmd)
 			else
 				ft_printf("%s: %s\n", strerror(errno), lst_cmd->cmd);
 		}
+		free(abs_cmd);
 	}
 	else if (is_empty(cmd))
 		lst_cmd = fill_lst_cmd("", cmd, 1);
