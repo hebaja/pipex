@@ -4,7 +4,11 @@ int	valid_built_cmd(char *built_cmd)
 {
 	char	*abs_cmd;
 
+	if (!built_cmd)
+		return (0);
 	abs_cmd = ft_substr(built_cmd, 0, cmd_len(built_cmd));
+	if (!abs_cmd)
+		return (0);
 	if (access(abs_cmd, F_OK) == 0 && access(abs_cmd, X_OK) == 0)
 	{
 		free(abs_cmd);
@@ -33,16 +37,11 @@ char    *add_path(char *cmd)
 		while (i < sizeof(paths) / 8)
 		{
 			built_cmd = ft_strjoin(paths[i++], cmd);
+			if (!built_cmd)
+				return (NULL);
 			if (valid_built_cmd(built_cmd))
 				return (built_cmd);
 		}
-	}
-	else
-	{
-		built_cmd = ft_strdup(cmd);
-			built_cmd = ft_strjoin(paths[i++], cmd);
-			if (valid_built_cmd(built_cmd))
-				return (built_cmd);
 	}
 	return (ft_strdup(cmd));
 }
@@ -52,9 +51,11 @@ t_cmd	*fill_lst_cmd(char *built_cmd, char *cmd, int is_empty)
 	int     cmd_pos;
 	t_cmd   *lst_cmd;
 
+	lst_cmd = (t_cmd *)malloc(sizeof(t_cmd) * 1);
+	if (!lst_cmd)
+		return (NULL);
 	if (is_empty)
 	{
-		lst_cmd = (t_cmd *)malloc(sizeof(t_cmd) * 1);
 		lst_cmd->cmd = ft_strdup(cmd);
 		lst_cmd->args = build_empty_args(cmd);
 		lst_cmd->next = NULL;
@@ -62,7 +63,6 @@ t_cmd	*fill_lst_cmd(char *built_cmd, char *cmd, int is_empty)
 	else
 	{
 		cmd_pos = 0;
-		lst_cmd = (t_cmd *)malloc(sizeof(t_cmd) * 1);
 		if (!is_path(cmd))
 			cmd_pos = command_pos(built_cmd);
 		lst_cmd->cmd = ft_substr(built_cmd, 0, cmd_len(built_cmd));
@@ -82,6 +82,8 @@ t_cmd   *cmd_new(char *cmd)
 	if (*cmd && !is_empty(cmd))
 	{
 		built_cmd = add_path(cmd);
+		if (!built_cmd)
+			return (NULL);
 		abs_cmd = ft_substr(built_cmd, 0, cmd_len(built_cmd));
 		if (access(abs_cmd, F_OK) == 0 && access(abs_cmd, X_OK) == 0)
 			lst_cmd = fill_lst_cmd(built_cmd, cmd, 0);
@@ -100,13 +102,24 @@ t_cmd   *cmd_new(char *cmd)
 	return (lst_cmd);
 }
 
-t_cmd   *compose_cmd(char *cmd)
+int   compose_cmd(char *cmd, t_cmd **lst_cmd)
 {
-	t_cmd   *lst_cmd;
-	if (*cmd)
+	t_cmd   *lst_cmd_new;
+
+	if (*cmd && *lst_cmd == NULL)
 	{
-		lst_cmd = cmd_new(cmd);
-		return (lst_cmd);
+		*lst_cmd = cmd_new(cmd);
+		if (*lst_cmd)
+			return (1);
 	}
-	return (NULL);
+	else
+	{
+		lst_cmd_new = cmd_new(cmd);
+		if (lst_cmd_new)
+		{
+			(*lst_cmd)->next = lst_cmd_new;
+			return (1);
+		}
+	}
+	return (0);
 }

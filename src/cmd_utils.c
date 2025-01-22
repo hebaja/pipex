@@ -33,7 +33,7 @@ size_t  cmd_len(char *cmd)
     size_t  count;
 
 	count = 0;
-	if (*cmd)
+	if (cmd)
 	{
 		while(*cmd == ' ' || *cmd == '\t')
 			cmd++;
