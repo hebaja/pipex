@@ -1,12 +1,14 @@
 #include "../include/pipex.h"
 
-int     do_command(int **fd, t_cmd *lst_cmd, int count)
+int     do_command(int **fd, t_cmd *lst_cmd, int count, char *file_content)
 {
 	int     i;
 	int     pid;
+	t_cmd	*head;
 
 	i = -1;
 	pid = 0;
+	head = lst_cmd;
 	pid = fork();
 	if (pid < 0)
 	{
@@ -21,9 +23,15 @@ int     do_command(int **fd, t_cmd *lst_cmd, int count)
 		dup2(fd[count + 1][1], STDOUT_FILENO);
 		close_fds(fd, 1);
 		execve(lst_cmd->cmd, lst_cmd->args, NULL);
+		lst_cmd_clear(&head);
+		clear_fd(fd, 3);
+		free(file_content);
 		ft_printf("");
 		exit(EXIT_FAILURE);
 	}
+
+	// IMPLEMENT WAITPID HERE
+
 	return (pid);
 }
 
@@ -34,8 +42,8 @@ int	exec_pipex(int **fd, t_cmd **lst_cmd, char *file_content, int out_fd)
 
 	i = -1;
 	while (++i < 2)
-		if(do_command(fd, *lst_cmd, i) == 0)
-			break;
+		if(do_command(fd, *lst_cmd, i, file_content) == 0)
+			break ;
 	close_fds(fd, 0);
 	if (!fetch_file_content(fd, file_content) || !write_to_outfile(fd, out_fd))
 	{

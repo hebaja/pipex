@@ -19,7 +19,10 @@ int	init_files(char *filename_in, char *filename_out, char **file_content, int *
 	{
 		*file_content = (char *)malloc(sizeof(char) * (get_file_len(filename_in) + 1));
 		if (!file_content)
+		{
+			perror(filename_in);
 			res = 0;
+		}
 		else
 			get_file_content(filename_in, *file_content);
 	}

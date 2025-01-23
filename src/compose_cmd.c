@@ -89,11 +89,13 @@ t_cmd   *cmd_new(char *cmd)
 			lst_cmd = fill_lst_cmd(built_cmd, cmd, 0);
 		else
 		{
-			lst_cmd = fill_lst_cmd(built_cmd, cmd, 0);
+			// lst_cmd = fill_lst_cmd(built_cmd, cmd, 0);
+			lst_cmd = NULL;
+			free(built_cmd);
 			if (errno == ENOENT)
-				ft_printf("command not found: %s\n", lst_cmd->cmd);
+				ft_printf("Command not found: %s\n", cmd);
 			else
-				ft_printf("%s: %s\n", strerror(errno), lst_cmd->cmd);
+				ft_printf("%s: %s\n", strerror(errno), cmd);
 		}
 		free(abs_cmd);
 	}
@@ -106,7 +108,7 @@ int   compose_cmd(char *cmd, t_cmd **lst_cmd)
 {
 	t_cmd   *lst_cmd_new;
 
-	if (*cmd && *lst_cmd == NULL)
+	if (*lst_cmd == NULL)
 	{
 		*lst_cmd = cmd_new(cmd);
 		if (*lst_cmd)

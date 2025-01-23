@@ -36,7 +36,7 @@ int	write_to_outfile(int **fd, int out_fd);
 int	fetch_file_content(int **fd, char *file_content);
 void    lst_cmd_clear(t_cmd **lst_cmd);
 void    print_args(char **args);
-int     do_command(int **fd, t_cmd *lst_cmd, int count);
+int     do_command(int **fd, t_cmd *lst_cmd, int count, char *file_content);
 int    exec_pipex(int **fd, t_cmd **lst_cmd, char *file_content, int out_fd);
 
 #endif

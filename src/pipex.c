@@ -19,15 +19,22 @@ int	main(int argc, char **argv)
 			exit(EXIT_FAILURE);
 		}
 		while (++i < 4)
-			compose_cmd(argv[i], &lst_cmd);
+			if (!compose_cmd(argv[i], &lst_cmd))
+			{
+				clear_fd(fd, 3);
+				lst_cmd_clear(&lst_cmd);			
+				free(file_content);
+				exit(EXIT_FAILURE);
+			}
+				
 		if (lst_cmd)
 		{
 			if (!exec_pipex(fd, &lst_cmd, file_content, out_fd))
 			{
-				clear_fd(fd, 3);
-				lst_cmd_clear(&lst_cmd);	
-				free(file_content);
-				ft_printf("Could not execute command: %s", strerror(EIO));
+				// clear_fd(fd, 3);
+				// lst_cmd_clear(&lst_cmd);	
+				// free(file_content);
+				// ft_printf("Could not execute command: %s", strerror(EIO));
 				exit(EXIT_FAILURE);
 			}
 		}
@@ -40,5 +47,7 @@ int	main(int argc, char **argv)
 			exit(EXIT_FAILURE);
 		}
 	}
+	else
+		ft_printf("Insufficient number of arguments");
 	return (0);
 }
