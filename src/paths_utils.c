@@ -14,10 +14,8 @@
 
 char	**build_paths(void)
 {
-	int		i;
 	char	**paths;
 
-	i = -1;
 	paths = (char **)malloc(sizeof(char *) * 7);
 	paths[0] = ft_strdup("/usr/bin/");
 	paths[1] = ft_strdup("/usr/sbin/");

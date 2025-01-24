@@ -3,7 +3,7 @@ CC_FLAGS= -Wall -Wextra -Werror
 NAME=libpipex.a
 INC_DIR=include
 SRC_DIR=src
-SRC_FILES=pipex.c compose_cmd.c pipex_utils.c cmd_utils.c fd_utils.c file_content_utils.c files_utils.c lst_cmd_utils.c
+SRC_FILES=pipex.c compose_cmd.c pipex_utils.c cmd_utils.c fd_utils.c file_content_utils.c files_utils.c lst_cmd_utils.c paths_utils.c
 LIB_DIR=lib
 LIBFT=$(LIB_DIR)/libft/libft.a
 LIBFT_PRINTF=$(LIB_DIR)/ft_printf/libftprintf.a
@@ -34,6 +34,7 @@ fclean: clean
 	make -C $(LIB_DIR)/libft fclean
 	make -C $(LIB_DIR)/ft_printf fclean
 	rm -f $(NAME)
+	rm -f pipex
 
 re: fclean all
 
