@@ -1,6 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   files_utils.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: hebatist <hebatist@student.42.rio>         +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/01/23 18:58:20 by hebatist          #+#    #+#             */
+/*   Updated: 2025/01/23 22:44:55 by hebatist         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../include/pipex.h"
 
-int     file_exists(char *file_name)
+int	file_exists(char *file_name)
 {
 	if (access(file_name, F_OK) < 0)
 	{
@@ -10,36 +22,60 @@ int     file_exists(char *file_name)
 	return (1);
 }
 
-int	init_files(char *filename_in, char *filename_out, char **file_content, int *out_fd)
+int	init_files(char *fname_in, char *fname_out, char **fcontent, int *fd)
 {
-	int     res;
+	int	res;
 
 	res = 1;
-	if (file_exists(filename_in))
+	if (file_exists(fname_in))
 	{
-		*file_content = (char *)malloc(sizeof(char) * (get_file_len(filename_in) + 1));
-		if (!file_content)
+		*fcontent = (char *)malloc(sizeof(char) * (get_file_len(fname_in) + 1));
+		if (!fcontent)
 		{
-			perror(filename_in);
+			perror(fname_in);
 			res = 0;
 		}
 		else
-			get_file_content(filename_in, *file_content);
+			get_file_content(fname_in, *fcontent);
 	}
 	else
 		res = 0;
-	*out_fd = open(filename_out, O_WRONLY | O_CREAT | O_TRUNC, 0664);
-	if (*out_fd < 0)
+	*fd = open(fname_out, O_WRONLY | O_CREAT | O_TRUNC, 0664);
+	if (*fd < 0)
 		res = 0;
 	return (res);
 }
 
-int	write_to_outfile(int **fd, int out_fd)
+void	wait_for_pids(t_cmd *lst_cmd)
 {
-	int     bytes;
-	char    buffer[1024];
+	int	status;
+
+	while (lst_cmd)
+	{
+		waitpid(lst_cmd->pid, &status, 0);
+		if (WIFEXITED(status))
+		{
+			if (WEXITSTATUS(status) != 0)
+			{
+				ft_printf("Execve %s pid %d: ", lst_cmd->cmd, lst_cmd->pid);
+				if (errno == ENOENT)
+					ft_printf("execve failed\n");
+				else
+					ft_printf("%s\n", strerror(errno));
+				break ;
+			}
+		}
+		lst_cmd = lst_cmd->next;
+	}
+}
+
+int	write_to_outfile(int **fd, int out_fd, t_cmd **lst_cmd)
+{
+	int			bytes;
+	char		buffer[1024];
 
 	bytes = -1;
+	wait_for_pids(*lst_cmd);
 	bytes = read(fd[2][0], buffer, sizeof(buffer));
 	if (bytes == -1)
 	{
@@ -65,7 +101,6 @@ int	fetch_file_content(int **fd, char *file_content)
 
 	bytes = write(fd[0][1], file_content, ft_strlen(file_content));
 	close(fd[0][1]);
-
 	if (bytes < 0)
 	{
 		perror("Error reading from file");

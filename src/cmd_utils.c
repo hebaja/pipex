@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   cmd_utils.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: hebatist <hebatist@student.42.rio>         +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/01/23 18:57:06 by hebatist          #+#    #+#             */
+/*   Updated: 2025/01/23 19:04:56 by hebatist         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../include/pipex.h"
 
 int	is_empty(char *str)
@@ -28,16 +40,16 @@ int	is_path(char *str)
 	return (0);
 }
 
-size_t  cmd_len(char *cmd)
+size_t	cmd_len(char *cmd)
 {
-    size_t  count;
+	size_t	count;
 
 	count = 0;
 	if (cmd)
 	{
-		while(*cmd == ' ' || *cmd == '\t')
+		while (*cmd == ' ' || *cmd == '\t')
 			cmd++;
-		while(*cmd && (*cmd != ' ' && *cmd != '\t'))
+		while (*cmd && (*cmd != ' ' && *cmd != '\t'))
 		{
 			count++;
 			cmd++;

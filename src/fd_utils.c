@@ -1,6 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   fd_utils.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: hebatist <hebatist@student.42.rio>         +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/01/23 18:57:34 by hebatist          #+#    #+#             */
+/*   Updated: 2025/01/23 19:13:33 by hebatist         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../include/pipex.h"
 
-void    close_fds(int **fd, int all)
+void	close_fds(int **fd, int all)
 {
 	close(fd[0][0]);
 	close(fd[1][0]);
@@ -13,9 +25,9 @@ void    close_fds(int **fd, int all)
 	}
 }
 
-void    clear_fd(int **fd, int rows)
+void	clear_fd(int **fd, int rows)
 {
-	int     i;
+	int	i;
 
 	i = -1;
 	while (++i < rows)
@@ -24,11 +36,11 @@ void    clear_fd(int **fd, int rows)
 	fd = NULL;
 }
 
-int     **init_fd(int rows, int cols)
+int	**init_fd(int rows)
 {
-	int     **fd;
-	int     i;
-	int     j;
+	int	**fd;
+	int	i;
+	int	j;
 
 	i = -1;
 	j = -1;
@@ -45,7 +57,7 @@ int     **init_fd(int rows, int cols)
 		{
 			perror("Failed to allocate memory for pipe");
 			while (++j < i)
-					free(fd[j]);
+				free(fd[j]);
 			free(fd);
 			exit(EXIT_FAILURE);
 		}
@@ -53,9 +65,9 @@ int     **init_fd(int rows, int cols)
 	return (fd);
 }
 
-int     init_pipes(int **fd, int rows)
+int	init_pipes(int **fd, int rows)
 {
-	int     i;
+	int	i;
 
 	i = -1;
 	while (++i < rows)
