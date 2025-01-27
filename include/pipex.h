@@ -34,7 +34,8 @@ typedef struct s_cmd
 size_t	get_file_len(const char *file_name);
 size_t	cmd_len(char *cmd);
 void	get_file_content(const char *file_name, char *str);
-void	close_fds(int **fd, int all);
+void	close_fds(int **fd, int size);
+void	close_unused_fds(int **fd, int count);
 void	clear_fd(int **fd, int rows);
 void	lst_cmd_clear(t_cmd **lst_cmd);
 void	print_args(char **args);

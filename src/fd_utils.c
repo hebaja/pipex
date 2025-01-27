@@ -12,16 +12,57 @@
 
 #include "../include/pipex.h"
 
-void	close_fds(int **fd, int all)
+void	close_fds(int **fd, int size)
 {
-	close(fd[0][0]);
-	close(fd[1][0]);
-	close(fd[1][1]);
-	close(fd[2][1]);
-	if (all)
+	int	i;
+	int	j;
+
+	i = -1;
+	while (++i < size)
 	{
-		close(fd[0][1]);
-		close(fd[2][0]);
+		j = -1;
+		while (++j < 2)
+		{
+			if (i == 0)
+			{
+				if (j == 0)
+					close(fd[i][j]);
+			}
+			else if (i == (size - 1))
+			{
+				if (j == 1)
+					close(fd[i][j]);
+			}
+			else
+				close(fd[i][j]);
+		}
+	}
+}
+
+void    close_unused_fds(int **fd, int count)
+{
+	int     i;
+	int     j;
+
+	i = -1;
+	while (++i < 3)
+	{
+		j = -1;
+		while (++j < 2)
+		{
+			if (i == count)
+			{
+				if (j == 1)
+					close(fd[i][j]);
+			}
+			else if (i == count + 1)
+			{
+				if (j == 0)
+					close(fd[i][j]);
+			}
+			else
+				close(fd[i][j]);
+		}
 	}
 }
 

@@ -46,9 +46,9 @@ int	init_files(char *fname_in, char *fname_out, char **fcontent, int *fd)
 	return (res);
 }
 
-void	wait_for_pids(t_cmd *lst_cmd)
+void    wait_for_pids(t_cmd *lst_cmd)
 {
-	int	status;
+	int     status;
 
 	while (lst_cmd)
 	{
@@ -57,12 +57,8 @@ void	wait_for_pids(t_cmd *lst_cmd)
 		{
 			if (WEXITSTATUS(status) != 0)
 			{
-				ft_printf("Execve %s pid %d: ", lst_cmd->cmd, lst_cmd->pid);
-				if (errno == ENOENT)
-					ft_printf("execve failed\n");
-				else
-					ft_printf("%s\n", strerror(errno));
-				break ;
+				if (errno != ENOENT)
+					perror("Execve failed");
 			}
 		}
 		lst_cmd = lst_cmd->next;
