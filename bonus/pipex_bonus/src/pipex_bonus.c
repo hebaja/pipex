@@ -1,17 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pipex.c                                            :+:      :+:    :+:   */
+/*   pipex_bonus.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hebatist <hebatist@student.42.rio>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/23 19:00:13 by hebatist          #+#    #+#             */
-/*   Updated: 2025/01/23 22:51:26 by hebatist         ###   ########.fr       */
+/*   Updated: 2025/01/27 23:48:34 by hebatist         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/pipex_bonus.h"
 #include "../lib/libft/include/libft.h"
+
+#include <signal.h>
 
 t_cmd	*build_lst_cmd(char **argv, t_fds *fds, char *file_content)
 {
@@ -34,7 +36,6 @@ t_cmd	*build_lst_cmd(char **argv, t_fds *fds, char *file_content)
 
 void	init_pipex(char *in_filename, char **argv, int cmd_quant)
 {
-	int		out_fd;
 	char	*file_content;
 	t_cmd	*lst_cmd;
 	t_fds	*fds;
@@ -73,20 +74,35 @@ void	init_heredoc(char **argv, int cmd_quant)
 	int		fd;
 	char	*str;
 	char	*limit;
-
-	limit = ft_strjoin(argv[2], "\n");
+	
+	limit = argv[2];
 	fd = open("tempfile", O_WRONLY | O_CREAT | O_TRUNC, 0664);
 	print_pipe(cmd_quant);
-	ft_printf("heredoc> ");
+	ft_printf("here_doc> ");
 	str = get_next_line(0);
+
+	if (str == NULL)
+	{
+		close(fd);
+		free(limit);
+		exit(EXIT_FAILURE);
+	}
+
 	while(strcmp(str, limit) != 0)
 	{
 		print_pipe(cmd_quant);
-		ft_printf("heredoc> ");
+		ft_printf("here_doc> ");
 		write(fd, str, ft_strlen(str));
 		free(str);
 		str = get_next_line(0);
+		if (str == NULL)
+		{
+			close(fd);
+			free(limit);
+			exit(EXIT_FAILURE);
+		}
 	}
+
 	close(fd);
 	free(str);
 	free(limit);
@@ -100,7 +116,7 @@ int	main(int argc, char **argv)
 {
 	if (argc >= 5)
 	{
-		if (strcmp(argv[1], "heredoc") == 0)
+		if (strcmp(argv[1], "here_doc") == 0)
 		{
 			if (argc >= 6)
 				init_heredoc(argv, argc - 4);

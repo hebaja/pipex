@@ -6,7 +6,7 @@
 /*   By: hebatist <hebatist@student.42.rio>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/23 19:00:13 by hebatist          #+#    #+#             */
-/*   Updated: 2025/01/23 22:51:26 by hebatist         ###   ########.fr       */
+/*   Updated: 2025/01/27 20:44:52 by hebatist         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,6 @@ int	main(int argc, char **argv)
 	if (argc == 5)
 		init_pipex(argv);
 	else
-		ft_printf("Insufficient number of arguments\n");
+		ft_printf("Wrong number of arguments\n");
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: hebatist <hebatist@student.42.rio>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/23 18:58:20 by hebatist          #+#    #+#             */
-/*   Updated: 2025/01/23 22:44:55 by hebatist         ###   ########.fr       */
+/*   Updated: 2025/01/27 20:43:42 by hebatist         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,8 +57,8 @@ void    wait_for_pids(t_cmd *lst_cmd)
 		{
 			if (WEXITSTATUS(status) != 0)
 			{
-				if (errno != ENOENT)
-					perror("Execve failed");
+				if (errno != ENOENT && status != 256)
+					perror("Coud not execute command");
 			}
 		}
 		lst_cmd = lst_cmd->next;

@@ -6,7 +6,7 @@
 /*   By: hebatist <hebatist@student.42.rio>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/23 18:57:23 by hebatist          #+#    #+#             */
-/*   Updated: 2025/01/23 19:10:05 by hebatist         ###   ########.fr       */
+/*   Updated: 2025/01/27 20:11:22 by hebatist         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,6 +96,8 @@ t_cmd	*cmd_new(char *cmd)
 	t_cmd	*lst_cmd;
 
 	lst_cmd = NULL;
+	if (is_empty(cmd))
+		return (fill_lst_cmd(cmd, cmd, 1));
 	built_cmd = add_path(cmd);
 	if (!built_cmd)
 		return (NULL);
@@ -103,12 +105,11 @@ t_cmd	*cmd_new(char *cmd)
 	if ((access(abs_cmd, F_OK) != 0 && access(abs_cmd, X_OK) != 0)
 		|| is_empty(cmd))
 	{
-		lst_cmd = NULL;
-		free(built_cmd);
+		lst_cmd = fill_lst_cmd(built_cmd, cmd, 0);
 		if (errno == ENOENT)
-			ft_printf("Command not found: %s\n", cmd);
+			ft_printf("Command not found: %s\n", abs_cmd);
 		else
-			ft_printf("%s: %s\n", strerror(errno), cmd);
+			ft_printf("%s: %s\n", strerror(errno), abs_cmd);
 	}
 	else
 		lst_cmd = fill_lst_cmd(built_cmd, cmd, 0);
@@ -120,6 +121,8 @@ int	compose_cmd(char *cmd, t_cmd **lst_cmd)
 {
 	t_cmd	*lst_cmd_new;
 
+	if (is_empty(cmd))
+		ft_printf("Command not found: %s\n", cmd);
 	if (*lst_cmd == NULL)
 	{
 		*lst_cmd = cmd_new(cmd);
