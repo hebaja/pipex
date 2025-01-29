@@ -6,7 +6,7 @@
 /*   By: hebatist <hebatist@student.42.rio>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/23 18:57:23 by hebatist          #+#    #+#             */
-/*   Updated: 2025/01/27 21:44:23 by hebatist         ###   ########.fr       */
+/*   Updated: 2025/01/28 18:20:51 by hebatist         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,6 +116,16 @@ t_cmd	*cmd_new(char *cmd)
 	return (lst_cmd);
 }
 
+t_cmd	*lst_cmd_last(t_cmd *head)
+{
+	t_cmd	*current_lst_cmd;
+	
+	current_lst_cmd = head;
+	while (current_lst_cmd->next)
+		current_lst_cmd = current_lst_cmd->next;
+	return (current_lst_cmd);
+}
+
 int	compose_cmd(char *cmd, t_cmd **lst_cmd)
 {
 	t_cmd	*lst_cmd_new;
@@ -133,7 +143,8 @@ int	compose_cmd(char *cmd, t_cmd **lst_cmd)
 		lst_cmd_new = cmd_new(cmd);
 		if (lst_cmd_new)
 		{
-			(*lst_cmd)->next = lst_cmd_new;
+			//(*lst_cmd)->next = lst_cmd_new;
+			lst_cmd_last(*lst_cmd)->next = lst_cmd_new;
 			return (1);
 		}
 	}

@@ -6,7 +6,7 @@
 /*   By: hebatist <hebatist@student.42.rio>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/23 18:57:34 by hebatist          #+#    #+#             */
-/*   Updated: 2025/01/27 22:04:32 by hebatist         ###   ########.fr       */
+/*   Updated: 2025/01/28 15:27:24 by hebatist         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,7 @@ t_fds	*build_t_fds(int **fd, int rows, char *out_filename)
 	int	out_fd;
 
 	fds = (t_fds *)malloc(sizeof(t_fds) * 1);
-	out_fd = open(out_filename, O_WRONLY | O_CREAT | O_APPEND, 0664);
+	out_fd = open(out_filename, O_WRONLY | O_CREAT | O_TRUNC, 0664);
 	if (fds == NULL || out_fd < 0)
 		return (NULL);
 	fds->cmd_fd = fd;

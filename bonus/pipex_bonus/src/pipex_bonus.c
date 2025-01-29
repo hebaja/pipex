@@ -6,7 +6,7 @@
 /*   By: hebatist <hebatist@student.42.rio>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/23 19:00:13 by hebatist          #+#    #+#             */
-/*   Updated: 2025/01/27 23:48:34 by hebatist         ###   ########.fr       */
+/*   Updated: 2025/01/28 16:11:13 by hebatist         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,14 +15,14 @@
 
 #include <signal.h>
 
-t_cmd	*build_lst_cmd(char **argv, t_fds *fds, char *file_content)
+t_cmd	*build_lst_cmd(char **argv, t_fds *fds, char *file_content, int cmd_quant)
 {
 	int			i;
 	t_cmd		*lst_cmd;
 
 	i = -1;
 	lst_cmd = NULL;
-	while (++i < 2)
+	while (++i < cmd_quant)
 	{
 		if (!compose_cmd(argv[i], &lst_cmd))
 		{
@@ -55,7 +55,7 @@ void	init_pipex(char *in_filename, char **argv, int cmd_quant)
 		free(file_content);
 		exit(EXIT_FAILURE);
 	}
-	lst_cmd = build_lst_cmd(argv, fds, file_content);
+	lst_cmd = build_lst_cmd(argv, fds, file_content, cmd_quant);
 	if (!exec_pipex(fds, &lst_cmd, file_content, cmd_quant))
 		exit(EXIT_FAILURE);
 }
@@ -75,7 +75,7 @@ void	init_heredoc(char **argv, int cmd_quant)
 	char	*str;
 	char	*limit;
 	
-	limit = argv[2];
+	limit = ft_strjoin(argv[2], "\n");
 	fd = open("tempfile", O_WRONLY | O_CREAT | O_TRUNC, 0664);
 	print_pipe(cmd_quant);
 	ft_printf("here_doc> ");
