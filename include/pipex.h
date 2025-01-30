@@ -6,7 +6,7 @@
 /*   By: hebatist <hebatist@student.42.rio>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/24 01:56:58 by hebatist          #+#    #+#             */
-/*   Updated: 2025/01/24 02:04:18 by hebatist         ###   ########.fr       */
+/*   Updated: 2025/01/29 23:04:01 by hebatist         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,5 +55,11 @@ int		write_to_outfile(int **fd, int out_fd, t_cmd **lst_cmd);
 int		fetch_file_content(int **fd, char *file_content);
 int		do_command(int **fd, t_cmd *lst_cmd, int count, char *file_content);
 int		exec_pipex(int **fd, t_cmd **lst_cmd, char *file_content, int out_fd);
+int	contains_quote(char *str);
+size_t	quote_quant(const char *str);
+char	*remove_quotes(const char *str);
+t_cmd	*fill_non_empty_cmd(char *built_cmd, char *cmd);
+t_cmd	*fill_empty_cmd(char *cmd);
+int	options_quant(char *str);
 
 #endif

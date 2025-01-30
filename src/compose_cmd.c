@@ -6,7 +6,7 @@
 /*   By: hebatist <hebatist@student.42.rio>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/23 18:57:23 by hebatist          #+#    #+#             */
-/*   Updated: 2025/01/27 20:11:22 by hebatist         ###   ########.fr       */
+/*   Updated: 2025/01/30 00:01:08 by hebatist         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,30 +62,13 @@ char	*add_path(char *cmd)
 
 t_cmd	*fill_lst_cmd(char *built_cmd, char *cmd, int is_empty)
 {
-	int			cmd_pos;
 	t_cmd		*lst_cmd;
 
-	lst_cmd = (t_cmd *)malloc(sizeof(t_cmd) * 1);
-	if (!lst_cmd)
-		return (NULL);
+	lst_cmd = NULL;
 	if (is_empty)
-	{
-		lst_cmd->cmd = ft_strdup(cmd);
-		lst_cmd->args = build_empty_args(cmd);
-		lst_cmd->next = NULL;
-		lst_cmd->pid = 0;
-	}
+		lst_cmd = fill_empty_cmd(cmd);
 	else
-	{
-		cmd_pos = 0;
-		if (!is_path(cmd))
-			cmd_pos = command_pos(built_cmd);
-		lst_cmd->cmd = ft_substr(built_cmd, 0, cmd_len(built_cmd));
-		lst_cmd->args = ft_split(&built_cmd[cmd_pos], ' ');
-		lst_cmd->next = NULL;
-		lst_cmd->pid = 0;
-		free(built_cmd);
-	}
+		lst_cmd = fill_non_empty_cmd(built_cmd, cmd);
 	return (lst_cmd);
 }
 
@@ -114,6 +97,7 @@ t_cmd	*cmd_new(char *cmd)
 	else
 		lst_cmd = fill_lst_cmd(built_cmd, cmd, 0);
 	free(abs_cmd);
+	free(built_cmd);
 	return (lst_cmd);
 }
 

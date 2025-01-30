@@ -6,7 +6,7 @@
 /*   By: hebatist <hebatist@student.42.rio>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/23 18:58:20 by hebatist          #+#    #+#             */
-/*   Updated: 2025/01/27 20:43:42 by hebatist         ###   ########.fr       */
+/*   Updated: 2025/01/29 21:34:05 by hebatist         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,9 +46,9 @@ int	init_files(char *fname_in, char *fname_out, char **fcontent, int *fd)
 	return (res);
 }
 
-void    wait_for_pids(t_cmd *lst_cmd)
+void	wait_for_pids(t_cmd *lst_cmd)
 {
-	int     status;
+	int	status;
 
 	while (lst_cmd)
 	{

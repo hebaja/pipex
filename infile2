@@ -1,0 +1,15 @@
+-rwxr-xr-x 1 hebatist 4224 38248 Jan 29 19:01 a.out
+drwxr-xr-x 3 hebatist 4224    25 Jan 27 15:50 bonus
+-rw-r--r-- 1 hebatist 4224     0 Jan 27 21:37 empty_infile
+drwxr-xr-x 2 hebatist 4224    21 Jan 27 15:50 include
+-rw-r--r-- 1 hebatist 4224    45 Jan 27 17:07 infile
+-rw-r--r-- 1 hebatist 4224    68 Jan 29 15:39 infile1
+drwxr-xr-x 4 hebatist 4224    36 Jan  9 00:13 lib
+-rw-r--r-- 1 hebatist 4224 95866 Jan 28 15:25 libpipex.a
+-rw-r--r-- 1 hebatist 4224   941 Jan 27 15:50 Makefile
+-rw-r--r-- 1 hebatist 4224     2 Jan  9 00:14 notfile
+-rw-r--r-- 1 hebatist 4224    68 Jan 29 19:02 outfile
+-rw-r--r-- 1 hebatist 4224     0 Jan 27 21:49 outfile2
+-rwxr-xr-x 1 hebatist 4224 27584 Jan 28 15:25 pipex
+drwxr-xr-x 2 hebatist 4224  4096 Jan 29 19:02 src
+-rwxr-xr-x 1 hebatist 4224    25 Jan 27 21:32 test.sh

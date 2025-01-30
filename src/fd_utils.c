@@ -6,7 +6,7 @@
 /*   By: hebatist <hebatist@student.42.rio>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/23 18:57:34 by hebatist          #+#    #+#             */
-/*   Updated: 2025/01/23 19:13:33 by hebatist         ###   ########.fr       */
+/*   Updated: 2025/01/29 21:36:48 by hebatist         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,10 +39,10 @@ void	close_fds(int **fd, int size)
 	}
 }
 
-void    close_unused_fds(int **fd, int count)
+void	close_unused_fds(int **fd, int count)
 {
-	int     i;
-	int     j;
+	int	i;
+	int	j;
 
 	i = -1;
 	while (++i < 3)
