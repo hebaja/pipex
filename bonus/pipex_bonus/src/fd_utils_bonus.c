@@ -12,72 +12,6 @@
 
 #include "../include/pipex_bonus.h"
 
-void    close_init_fds(int **fd, int size)
-{
-	int     i;
-	int     j;
-
-	i = -1;
-	while (++i < size)
-	{
-		j = -1;
-		while (++j < 2)
-		{
-			if (i == 0)
-			{
-				if (j == 0)
-					close(fd[i][j]);
-			}
-			else if (i == (size - 1))
-			{
-				if (j == 1)
-					close(fd[i][j]);
-			}
-			else
-				close(fd[i][j]);
-		}
-	}
-}
-
-void    close_unused_fds(int **fd, int count)
-{
-	int     i;
-	int     j;
-
-	i = -1;
-	while (++i < 3)
-	{
-		j = -1;
-		while (++j < 2)
-		{
-			if (i == count)
-			{
-				if (j == 1)
-					close(fd[i][j]);
-			}
-			else if (i == count + 1)
-			{
-				if (j == 0)
-					close(fd[i][j]);
-			}
-			else
-				close(fd[i][j]);
-		}
-	}
-}
-
-void	clear_fds(t_fds *fds)
-{
-	int	i;
-
-	i = -1;
-	while (++i < fds->cmd_fd_rows)
-		free(fds->cmd_fd[i]);
-	free(fds->cmd_fd);
-	free(fds);
-	fds = NULL;
-}
-
 void	fd_alloc_fail(void)
 {
 	perror("Failed to allocate memory for fd");
@@ -107,7 +41,7 @@ t_fds	*init_t_fds(int rows, char *out_filename)
 
 	i = -1;
 	j = -1;
-	fd = (int **)malloc(sizeof(int *) * rows);
+	fd = (int **)malloc(sizeof(int *) * (rows + 1));
 	if (fd == NULL)
 		fd_alloc_fail();
 	while (++i < rows)
@@ -121,6 +55,7 @@ t_fds	*init_t_fds(int rows, char *out_filename)
 			fd_alloc_fail();
 		}
 	}
+	fd[i] = NULL;
 	return (build_t_fds(fd, rows, out_filename));
 }
 

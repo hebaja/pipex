@@ -66,8 +66,8 @@ int	write_to_outfile(t_fds *fds, t_cmd **lst_cmd, int cmd_quant)
 		perror("Error writing to file");
 		return (0);
 	}
-	close(fds->cmd_fd[cmd_quant][0]);
 	dup2(fds->out_fd, STDOUT_FILENO);
+	close(fds->cmd_fd[cmd_quant][0]);
 	close(fds->out_fd);
 	if (bytes > 0)
 	{

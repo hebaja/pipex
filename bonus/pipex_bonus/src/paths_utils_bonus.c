@@ -12,22 +12,25 @@
 
 #include "../include/pipex_bonus.h"
 
-char	**build_paths(void)
+char    **fetch_path(char **envp)
 {
-	char	**paths;
+	int     i;
+	char    *target = "PATH";
+	char    *path;
+	char    **split_path;
 
-	paths = (char **)malloc(sizeof(char *) * 7);
-	paths[0] = ft_strdup("/usr/bin/");
-	paths[1] = ft_strdup("/usr/sbin/");
-	paths[2] = ft_strdup("/bin/");
-	paths[3] = ft_strdup("/sbin/");
-	paths[4] = ft_strdup("/usr/local/bin/");
-	paths[5] = ft_strdup("/usr/local/sbin/");
-	paths[6] = NULL;
-	return (paths);
+	i = 0;
+	while (envp[i])
+	{
+		if (ft_strncmp(envp[i], target, ft_strlen(target)) == 0 && envp[i][ft_strlen(target)] == '=')
+			path = envp[i];
+		i++;
+	}
+	split_path = ft_split(ft_strchr(path, '/'), ':');
+	return (split_path);
 }
 
-void	clean_paths(char **paths)
+void	clean_path(char **paths)
 {
 	int	i;
 

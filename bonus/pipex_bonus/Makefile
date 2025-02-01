@@ -3,7 +3,8 @@ CC_FLAGS= -Wall -Wextra -Werror
 NAME=libpipex.a
 INC_DIR=include
 SRC_DIR=src
-SRC_FILES=pipex_bonus.c compose_cmd_bonus.c pipex_utils_bonus.c cmd_utils_bonus.c fd_utils_bonus.c file_content_utils_bonus.c files_utils_bonus.c lst_cmd_utils_bonus.c paths_utils_bonus.c
+SRC_FILES=cmd_args_utils_bonus.c fd_utils_bonus.c paths_utils_bonus.c cmd_utils_bonus.c file_content_utils_bonus.c pipex_bonus.c \
+		  compose_cmd_bonus.c files_utils_bonus.c pipex_utils_bonus.c compose_cmd_utils_bonus.c lst_cmd_utils_bonus.c
 LIB_DIR=lib
 LIBFT=$(LIB_DIR)/libft/libft.a
 LIBFT_PRINTF=$(LIB_DIR)/ft_printf/libftprintf.a

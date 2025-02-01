@@ -6,11 +6,11 @@
 /*   By: hebatist <hebatist@student.42.rio>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/29 23:39:33 by hebatist          #+#    #+#             */
-/*   Updated: 2025/01/29 23:39:43 by hebatist         ###   ########.fr       */
+/*   Updated: 2025/01/30 20:48:06 by hebatist         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/pipex.h"
+#include "../include/pipex_bonus.h"
 
 int	contains_quote(char *str)
 {
@@ -45,7 +45,7 @@ char	*remove_quotes(const char *str)
 	int			j;
 
 	len = ft_strlen(str) - quote_quant(str);
-	str_new = (char *)malloc(sizeof(char) * (len + 1));
+	str_new = ft_calloc(sizeof(char), len + 1);
 	i = 0;
 	j = 0;
 	while (str[i])
@@ -58,21 +58,29 @@ char	*remove_quotes(const char *str)
 			i++;
 			j++;
 		}
+		if (str[i] == 39)
+			break ;
 	}
 	str_new[j] = '\0';
 	return (str_new);
 }
 
-int	options_quant(char *str)
+char	*catch_option(char *str)
 {
-	int	count;
+	char		*str_new;
+	int			i;
+	int			len;
 
-	count = 0;
-	while (*str)
+	i = 0;
+	len = 0;
+	while (str[len] && str[len] != ' ')
+		len++;
+	str_new = ft_calloc(sizeof(char), len + 1);
+	while (str[i] && str[i] != ' ')
 	{
-		if (*str == '-' && *(str - 1) == ' ' && ft_isalnum(*(str + 1)))
-			count++;
-		str++;
+		str_new[i] = str[i];
+		i++;
 	}
-	return (count);
+	str_new[i] = '\0';
+	return (str_new);
 }

@@ -1,16 +1,1 @@
-total 212
--rwxr-xr-x 1 hebatist 4224  43696 Jan 28 20:00 a.out
-drwxr-xr-x 2 hebatist 4224     27 Jan 27 15:50 include
--rw-r--r-- 1 hebatist 4224     45 Jan 27 21:36 infile
--rw-r--r-- 1 hebatist 4224      0 Jan 28 20:58 infile1
-drwxr-xr-x 4 hebatist 4224     36 Jan 27 15:50 lib
--rw-r--r-- 1 hebatist 4224 102586 Jan 28 18:34 libpipex.a
--rw-r--r-- 1 hebatist 4224    998 Jan 27 15:50 Makefile
--rw-r--r-- 1 hebatist 4224      2 Jan 27 15:50 notfile
--rw-r--r-- 1 hebatist 4224    180 Jan 28 20:25 outfile
--rw-r--r-- 1 hebatist 4224      0 Jan 27 15:50 outfiles
--rw-r--r-- 1 hebatist 4224      2 Jan 27 15:50 outfilev
--rwxr-xr-x 1 hebatist 4224  32360 Jan 28 19:03 pipex
-drwxr-xr-x 2 hebatist 4224   4096 Jan 28 19:33 src
--rw-r--r-- 1 hebatist 4224     13 Jan 28 15:58 tempfile
--rwxr-xr-x 1 hebatist 4224     26 Jan 27 15:50 test.sh
+vboxusers plugdev qemu libvirt-qemu libvirt docker uucp wheel focus

@@ -11,35 +11,15 @@
 /* ************************************************************************** */
 
 #include "../include/pipex_bonus.h"
-#include "../lib/libft/include/libft.h"
 
-#include <signal.h>
-
-t_cmd	*build_lst_cmd(char **argv, t_fds *fds, char *file_content, int cmd_quant)
-{
-	int			i;
-	t_cmd		*lst_cmd;
-
-	i = -1;
-	lst_cmd = NULL;
-	while (++i < cmd_quant)
-	{
-		if (!compose_cmd(argv[i], &lst_cmd))
-		{
-			clear_all(lst_cmd, fds, file_content);
-			ft_printf("Could not execute command: %s\n", strerror(EIO));
-			exit(EXIT_FAILURE);
-		}
-	}
-	return (lst_cmd);
-}
-
-void	init_pipex(char *in_filename, char **argv, int cmd_quant)
+void	init_pipex(char *in_filename, char **argv, char **path)
 {
 	char	*file_content;
 	t_cmd	*lst_cmd;
 	t_fds	*fds;
+	size_t	cmd_quant;
 
+	cmd_quant = get_cmd_quant(argv);
 	fds = init_t_fds(cmd_quant + 1, argv[cmd_quant]);
 	if (fds == NULL)
 		exit(EXIT_FAILURE);
@@ -55,71 +35,19 @@ void	init_pipex(char *in_filename, char **argv, int cmd_quant)
 		free(file_content);
 		exit(EXIT_FAILURE);
 	}
-	lst_cmd = build_lst_cmd(argv, fds, file_content, cmd_quant);
+	lst_cmd = build_lst_cmd(argv, fds, file_content, path);
 	if (!exec_pipex(fds, &lst_cmd, file_content, cmd_quant))
 		exit(EXIT_FAILURE);
 }
 
-void    print_pipe(int cmd_quant)
-{
-	int i;
-
-	i = 0;
-	while (++i < cmd_quant)
-		ft_printf("pipe ");
-}
-
-void	init_heredoc(char **argv, int cmd_quant)
-{
-	int		fd;
-	char	*str;
-	char	*limit;
-	
-	limit = ft_strjoin(argv[2], "\n");
-	fd = open("tempfile", O_WRONLY | O_CREAT | O_TRUNC, 0664);
-	print_pipe(cmd_quant);
-	ft_printf("here_doc> ");
-	str = get_next_line(0);
-
-	if (str == NULL)
-	{
-		close(fd);
-		free(limit);
-		exit(EXIT_FAILURE);
-	}
-
-	while(strcmp(str, limit) != 0)
-	{
-		print_pipe(cmd_quant);
-		ft_printf("here_doc> ");
-		write(fd, str, ft_strlen(str));
-		free(str);
-		str = get_next_line(0);
-		if (str == NULL)
-		{
-			close(fd);
-			free(limit);
-			exit(EXIT_FAILURE);
-		}
-	}
-
-	close(fd);
-	free(str);
-	free(limit);
-	if (access("tempfile", F_OK) < 0 && access("tempfile", R_OK) < 0)
-		perror("Could not access file");
-	else
-		init_pipex("tempfile", &argv[3], cmd_quant);
-}
-
-int	main(int argc, char **argv)
+int	main(int argc, char **argv, char **envp)
 {
 	if (argc >= 5)
 	{
 		if (strcmp(argv[1], "here_doc") == 0)
 		{
 			if (argc >= 6)
-				init_heredoc(argv, argc - 4);
+				init_here_doc(argv, fetch_path(envp));
 			else
 			{
 				ft_printf("Insufficient number of arguments\n");
@@ -127,7 +55,7 @@ int	main(int argc, char **argv)
 			}
 		}
 		else
-			init_pipex(argv[1], &argv[2], argc - 3);
+			init_pipex(argv[1], &argv[2], fetch_path(envp));
 	}
 	else
 		ft_printf("Insufficient number of arguments\n");

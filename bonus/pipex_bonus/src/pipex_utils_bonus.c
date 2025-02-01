@@ -40,7 +40,7 @@ int	do_command(t_fds *fds, t_cmd *lst_cmd, int count, char *file_content)
 		lst_cmd = lst_cmd->next;
 	if (pid == 0)
 	{
-		close_unused_fds(fds->cmd_fd, count);
+		close_unused_fds(fds, count);
 		dup2(fds->cmd_fd[count][0], STDIN_FILENO);
 		dup2(fds->cmd_fd[count + 1][1], STDOUT_FILENO);
 		close(fds->cmd_fd[count][0]);
@@ -62,7 +62,7 @@ int	exec_pipex(t_fds *fds, t_cmd **lst_cmd, char *file_content, int cmd_quant)
 	while (++i < cmd_quant)
 		if (do_command(fds, *lst_cmd, i, file_content) == 0)
 			break ;
-	close_init_fds(fds->cmd_fd, cmd_quant + 1);
+	close_init_fds(fds, cmd_quant + 1);
 	if (!fetch_file_content(fds->cmd_fd, file_content)
 		|| !write_to_outfile(fds, lst_cmd, cmd_quant))
 	{

@@ -34,28 +34,25 @@ int	valid_built_cmd(char *built_cmd)
 	return (0);
 }
 
-char	*add_path(char *cmd)
+char	*add_path(char *cmd, char **path)
 {
 	size_t	i;
-	char	**paths;
 	char	*built_cmd;
+	char	*tmp_cmd;
 
 	while (*cmd == ' ' || *cmd == '\t')
 		cmd++;
 	if (*cmd != '/' && access(cmd, F_OK) < 0)
 	{
 		i = 0;
-		paths = build_paths();
-		while (paths[i])
+		while (path[i])
 		{
-			built_cmd = ft_strjoin(paths[i++], cmd);
+			tmp_cmd = ft_strjoin("/", cmd);
+			built_cmd = ft_strjoin(path[i++], tmp_cmd);
+			free(tmp_cmd);
 			if (built_cmd && valid_built_cmd(built_cmd))
-			{
-				clean_paths(paths);
 				return (built_cmd);
-			}
 		}
-		clean_paths(paths);
 	}
 	return (ft_strdup(cmd));
 }
@@ -72,7 +69,7 @@ t_cmd	*fill_lst_cmd(char *built_cmd, char *cmd, int is_empty)
 	return (lst_cmd);
 }
 
-t_cmd	*cmd_new(char *cmd)
+t_cmd	*cmd_new(char *cmd, char **path)
 {
 	char	*built_cmd;
 	char	*abs_cmd;
@@ -81,7 +78,7 @@ t_cmd	*cmd_new(char *cmd)
 	lst_cmd = NULL;
 	if (is_empty(cmd))
 		return (fill_lst_cmd(cmd, cmd, 1));
-	built_cmd = add_path(cmd);
+	built_cmd = add_path(cmd, path);
 	if (!built_cmd)
 		return (NULL);
 	abs_cmd = ft_substr(built_cmd, 0, cmd_len(built_cmd));
@@ -101,7 +98,7 @@ t_cmd	*cmd_new(char *cmd)
 	return (lst_cmd);
 }
 
-int	compose_cmd(char *cmd, t_cmd **lst_cmd)
+int	compose_cmd(char *cmd, t_cmd **lst_cmd, char **path)
 {
 	t_cmd	*lst_cmd_new;
 
@@ -109,13 +106,13 @@ int	compose_cmd(char *cmd, t_cmd **lst_cmd)
 		ft_printf("Command not found: %s\n", cmd);
 	if (*lst_cmd == NULL)
 	{
-		*lst_cmd = cmd_new(cmd);
+		*lst_cmd = cmd_new(cmd, path);
 		if (*lst_cmd)
 			return (1);
 	}
 	else
 	{
-		lst_cmd_new = cmd_new(cmd);
+		lst_cmd_new = cmd_new(cmd, path);
 		if (lst_cmd_new)
 		{
 			(*lst_cmd)->next = lst_cmd_new;

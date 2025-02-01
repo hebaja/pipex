@@ -12,27 +12,12 @@
 
 #include "../include/pipex.h"
 
-char	**build_paths(void)
-{
-	char	**paths;
-
-	paths = (char **)malloc(sizeof(char *) * 7);
-	paths[0] = ft_strdup("/usr/bin/");
-	paths[1] = ft_strdup("/usr/sbin/");
-	paths[2] = ft_strdup("/bin/");
-	paths[3] = ft_strdup("/sbin/");
-	paths[4] = ft_strdup("/usr/local/bin/");
-	paths[5] = ft_strdup("/usr/local/sbin/");
-	paths[6] = NULL;
-	return (paths);
-}
-
-void	clean_paths(char **paths)
+void	clean_path(char **path)
 {
 	int	i;
 
 	i = -1;
-	while (paths[++i])
-		free(paths[i]);
-	free(paths);
+	while (path[++i])
+		free(path[i]);
+	free(path);
 }

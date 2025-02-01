@@ -69,8 +69,6 @@ int	exec_pipex(int **fd, t_cmd **lst_cmd, char *file_content, int out_fd)
 		clear_all(*lst_cmd, fd, file_content);
 		return (0);
 	}
-	lst_cmd_clear(lst_cmd);
-	clear_fd(fd, 3);
-	free(file_content);
+	clear_all(*lst_cmd, fd, file_content);
 	return (1);
 }
