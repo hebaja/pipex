@@ -6,7 +6,7 @@
 /*   By: hebatist <hebatist@student.42.rio>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/29 21:04:28 by hebatist          #+#    #+#             */
-/*   Updated: 2025/01/30 20:48:55 by hebatist         ###   ########.fr       */
+/*   Updated: 2025/02/01 16:33:03 by hebatist         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,11 +29,13 @@ int	get_args_quant(char const *s, char c)
 	return (count);
 }
 
-void	put_args(char **args, char *cmd, int len)
+int	put_args(char **args, char *cmd, int len)
 {
 	int			i;
 
 	i = 1;
+	if (quote_quant(cmd) % 2 != 0)
+		return (0);
 	args[0] = ft_substr(cmd, 0, cmd_len(cmd));
 	while (i < len && *cmd)
 	{
@@ -44,7 +46,7 @@ void	put_args(char **args, char *cmd, int len)
 		{
 			args[i] = remove_quotes(ft_strchr(cmd, 39));
 			cmd++;
-			while (*cmd != 39)
+			while (*cmd && *cmd != 39)
 				cmd++;
 		}
 		else
@@ -53,6 +55,7 @@ void	put_args(char **args, char *cmd, int len)
 		i++;
 	}
 	args[i] = NULL;
+	return (1);
 }
 
 char	**fill_args(char *cmd)
@@ -64,7 +67,11 @@ char	**fill_args(char *cmd)
 	args = (char **)malloc(sizeof(char *) * (len + 1));
 	if (args == NULL)
 		return (NULL);
-	put_args(args, cmd, len);
+	if (!put_args(args, cmd, len))
+	{
+		free(args);
+		return (NULL);
+	}
 	return (args);
 }
 
@@ -77,6 +84,13 @@ t_cmd	*fill_non_empty_cmd(char *built_cmd, char *cmd)
 		return (NULL);
 	lst_cmd->cmd = ft_substr(built_cmd, 0, cmd_len(built_cmd));
 	lst_cmd->args = fill_args(cmd);
+	if (lst_cmd->args == NULL)
+	{
+		ft_printf("%s: %s\n", lst_cmd->cmd, strerror(ENOEXEC));
+		free(lst_cmd->cmd);
+		free(lst_cmd);
+		return (NULL);
+	}
 	lst_cmd->next = NULL;
 	lst_cmd->pid = 0;
 	return (lst_cmd);
