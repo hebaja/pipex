@@ -44,7 +44,7 @@ int	main(int argc, char **argv, char **envp)
 {
 	if (argc >= 5)
 	{
-		if (strcmp(argv[1], "here_doc") == 0)
+		if (ft_strncmp(argv[1], "here_doc", ft_strlen(argv[1])) == 0)
 		{
 			if (argc >= 6)
 				init_here_doc(argv, fetch_path(envp));

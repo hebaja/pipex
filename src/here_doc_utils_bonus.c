@@ -26,6 +26,19 @@ void	clean(int fd, char *str, char *limit)
 	free(limit);
 }
 
+void	print_here_doc(char **argv)
+{
+	int	len;
+
+	len = 0;
+	while (argv[len])
+		len++;
+	len -= 5;
+	while (len--)
+		ft_printf("pipe ");
+	ft_printf("here_doc> ");
+}
+
 void	init_here_doc(char **argv, char **path)
 {
 	int			fd;
@@ -34,13 +47,13 @@ void	init_here_doc(char **argv, char **path)
 
 	limit = ft_strjoin(argv[2], "\n");
 	fd = open("tempfile", O_WRONLY | O_CREAT | O_TRUNC, 0664);
-	ft_printf("here_doc> ");
+	print_here_doc(argv);
 	str = get_next_line(0);
 	if (str == NULL)
 		case_error(fd, limit);
-	while (strcmp(str, limit) != 0)
+	while (ft_strncmp(str, limit, ft_strlen(str)) != 0)
 	{
-		ft_printf("here_doc> ");
+		print_here_doc(argv);
 		write(fd, str, ft_strlen(str));
 		free(str);
 		str = get_next_line(0);
