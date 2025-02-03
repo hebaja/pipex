@@ -6,7 +6,7 @@
 /*   By: hebatist <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 17:24:23 by hebatist          #+#    #+#             */
-/*   Updated: 2025/01/07 11:13:56 by hebatist         ###   ########.fr       */
+/*   Updated: 2025/02/03 18:29:57 by hebatist         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,12 +16,12 @@
 # include <unistd.h>
 # include <stdarg.h>
 
-size_t		ft_strlen(const char *str);
 int		ft_putchar_len(char c);
 int		ft_putstr_len(char *str);
 int		print_type(const char *str, va_list args);
 int		ft_printf(const char *str, ...);
 void	ft_putnbr_base_len(long nbr, char *base, int *len);
 void	ft_putptr_base_len(unsigned long nbr, char *base, int *len);
+size_t	ft_strlen(const char *str);
 
 #endif

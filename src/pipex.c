@@ -6,7 +6,7 @@
 /*   By: hebatist <hebatist@student.42.rio>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/23 19:00:13 by hebatist          #+#    #+#             */
-/*   Updated: 2025/01/31 01:06:38 by hebatist         ###   ########.fr       */
+/*   Updated: 2025/02/03 18:19:41 by hebatist         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ void	init_pipex(char **argv, char **path)
 		|| !init_files(argv[1], argv[4], &file_content, &out_fd))
 	{
 		clear_fd(fd, 3);
+		clean_path(path);
 		exit(EXIT_FAILURE);
 	}
 	lst_cmd = build_lst_cmd(argv, fd, file_content, path);

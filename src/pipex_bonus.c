@@ -6,11 +6,17 @@
 /*   By: hebatist <hebatist@student.42.rio>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/23 19:00:13 by hebatist          #+#    #+#             */
-/*   Updated: 2025/01/28 16:11:13 by hebatist         ###   ########.fr       */
+/*   Updated: 2025/02/03 18:33:27 by hebatist         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/pipex_bonus.h"
+
+void	clean_on_failure(t_fds *fds, char **path)
+{
+	clear_fds(fds);
+	clean_path(path);
+}
 
 void	init_pipex(char *in_filename, char **argv, char **path)
 {
@@ -26,12 +32,12 @@ void	init_pipex(char *in_filename, char **argv, char **path)
 	file_content = init_infile_content(in_filename);
 	if (file_content == NULL)
 	{
-		clear_fds(fds);
+		clean_on_failure(fds, path);
 		exit(EXIT_FAILURE);
 	}
 	if (!init_pipes(fds))
 	{
-		clear_fds(fds);
+		clean_on_failure(fds, path);
 		free(file_content);
 		exit(EXIT_FAILURE);
 	}
