@@ -6,7 +6,7 @@
 /*   By: hebatist <hebatist@student.42.rio>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/29 21:04:28 by hebatist          #+#    #+#             */
-/*   Updated: 2025/02/01 17:17:57 by hebatist         ###   ########.fr       */
+/*   Updated: 2025/02/04 15:48:19 by hebatist         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 int	get_args_quant(char const *s)
 {
-	int     count;
+	int	count;
 
 	count = 0;
 	while (*s)
