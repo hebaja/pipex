@@ -12,45 +12,45 @@
 
 #include "../include/pipex_bonus.h"
 
-int	contains_quote(char *str)
+int	catch_quote(char *str)
 {
 	while (*str)
 	{
-		if (*str == 39)
-			return (1);
+		if (*str == 34 || *str == 39)
+			return (*str);
 		str++;
 	}
 	return (0);
 }
 
-size_t	quote_quant(const char *str)
+size_t	quote_quant(char quote_char, const char *str)
 {
 	int	count;
 
 	count = 0;
 	while (*str)
 	{
-		if (*str == 39)
+		if (*str == quote_char)
 			count++;
 		str++;
 	}
 	return (count);
 }
 
-char	*remove_quotes(const char *str)
+char	*remove_quotes(char quote_char, const char *str)
 {
 	char		*str_new;
 	int			len;
 	int			i;
 	int			j;
 
-	len = ft_strlen(str) - quote_quant(str);
+	len = ft_strlen(str) - quote_quant(quote_char, str);
 	str_new = ft_calloc(sizeof(char), len + 1);
 	i = 0;
 	j = 0;
 	while (str[i])
 	{
-		if (str[i] == 39)
+		if (str[i] == quote_char)
 			i++;
 		else
 		{
@@ -58,7 +58,7 @@ char	*remove_quotes(const char *str)
 			i++;
 			j++;
 		}
-		if (str[i] == 39)
+		if (str[i] == quote_char)
 			break ;
 	}
 	str_new[j] = '\0';

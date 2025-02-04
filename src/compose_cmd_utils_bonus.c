@@ -12,18 +12,24 @@
 
 #include "../include/pipex_bonus.h"
 
-int	get_args_quant(char const *s, char c)
+int	get_args_quant(char const *s)
 {
-	int	count;
+	int     count;
 
 	count = 0;
 	while (*s)
 	{
-		if (*s == c)
+		if (*s == ' ')
 			s++;
-		if (*s && *s != c)
+		if (*s && (*s == 34 || *s == 39))
+		{
 			count++;
-		while (*s && *s != c)
+			while (*s && (*s != 34 || *s != 39))
+				s++;
+		}
+		else if (*s && *s != ' ')
+			count++;
+		while (*s && *s != ' ')
 			s++;
 	}
 	return (count);
@@ -34,7 +40,7 @@ int	put_args(char **args, char *cmd, int len)
 	int			i;
 
 	i = 1;
-	if (quote_quant(cmd) % 2 != 0)
+	if (quote_quant(catch_quote(cmd), cmd) % 2 != 0)
 		return (0);
 	args[0] = ft_substr(cmd, 0, cmd_len(cmd));
 	while (i < len && *cmd)
@@ -42,11 +48,11 @@ int	put_args(char **args, char *cmd, int len)
 		while (*cmd != ' ')
 			cmd++;
 		cmd++;
-		if (*cmd == 39)
+		if (*cmd == 34 || *cmd == 39)
 		{
-			args[i] = remove_quotes(ft_strchr(cmd, 39));
+			args[i] = remove_quotes(*cmd, cmd);
 			cmd++;
-			while (*cmd && *cmd != 39)
+			while (*cmd && *cmd != catch_quote(cmd))
 				cmd++;
 		}
 		else
@@ -63,7 +69,7 @@ char	**fill_args(char *cmd)
 	int			len;
 	char		**args;
 
-	len = get_args_quant(cmd, ' ');
+	len = get_args_quant(cmd);
 	args = (char **)malloc(sizeof(char *) * (len + 1));
 	if (args == NULL)
 		return (NULL);

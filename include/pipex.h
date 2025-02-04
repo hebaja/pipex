@@ -20,8 +20,7 @@
 # include <string.h>
 # include <errno.h>
 # include <sys/wait.h>
-# include "../lib/libft/include/libft.h"
-# include "../lib/ft_printf/include/ft_printf.h"
+# include "../libft/include/libft.h"
 
 typedef struct s_cmd
 {
@@ -33,7 +32,7 @@ typedef struct s_cmd
 
 size_t	get_file_len(const char *file_name);
 size_t	cmd_len(char *cmd);
-size_t	quote_quant(const char *str);
+size_t	quote_quant(char c, const char *str);
 void	get_file_content(const char *file_name, char *str);
 void	close_fds(int **fd, int size);
 void	close_unused_fds(int **fd, int count);
@@ -43,7 +42,7 @@ void	print_args(char **args);
 void	clear_all(t_cmd *head, int **fd, char *file_content);
 void	clean_path(char **paths);
 char	**build_empty_args(char *empty_str);
-char	*remove_quotes(const char *str);
+char	*remove_quotes(char c, const char *str);
 char	*catch_option(char *str);
 int		is_empty(char *str);
 int		compose_cmd(char *cmd, t_cmd **lst_cmd, char **path);
@@ -58,7 +57,7 @@ int		fetch_file_content(int **fd, char *file_content);
 int		do_command(int **fd, t_cmd *lst_cmd, int count, char *file_content);
 int		exec_pipex(int **fd, t_cmd **lst_cmd, char *file_content, int out_fd);
 int		options_quant(char *str);
-int		contains_quote(char *str);
+int		catch_quote(char *str);
 t_cmd	*fill_non_empty_cmd(char *built_cmd, char *cmd);
 t_cmd	*fill_empty_cmd(char *cmd);
 
